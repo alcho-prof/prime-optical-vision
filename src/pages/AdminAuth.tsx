@@ -17,7 +17,7 @@ const AdminAuth = () => {
     password: ''
   });
 
-  const { signIn, user, isAdmin } = useAuth();
+  const { signIn, signOut, user, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,10 +92,22 @@ const AdminAuth = () => {
           
           <CardContent>
             <form onSubmit={handleSignIn} className="space-y-4">
-              {error && (
+               {error && (
                 <Alert variant="destructive" className="bg-red-900/50 border-red-700 text-red-200">
                   <Lock className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription className="flex justify-between items-center">
+                    <span>{error}</span>
+                    {user && !isAdmin && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={signOut}
+                        className="text-red-200 hover:text-white hover:bg-red-800/50"
+                      >
+                        Sign Out
+                      </Button>
+                    )}
+                  </AlertDescription>
                 </Alert>
               )}
 
