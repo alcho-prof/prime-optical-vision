@@ -24,9 +24,15 @@ const AdminAuth = () => {
     if (user && isAdmin) {
       navigate('/admin/dashboard');
     } else if (user && !isAdmin) {
-      setError('Access denied. Admin privileges required.');
+      // Only show error if user just tried to login (not on page load)
+      if (formData.email || formData.password) {
+        setError('Access denied. Admin privileges required.');
+      }
+    } else if (!user) {
+      // Clear error when no user is logged in
+      setError('');
     }
-  }, [user, isAdmin, navigate]);
+  }, [user, isAdmin, navigate, formData.email, formData.password]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
