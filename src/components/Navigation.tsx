@@ -6,8 +6,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Search, User, ShoppingBag, Settings, LogOut, Shield } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+
+// Import the AuthContext properly
+import { useAuth } from "../contexts/AuthContext";
 
 const Navigation = () => {
   const { user, isAdmin, signOut } = useAuth();
