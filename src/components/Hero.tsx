@@ -32,7 +32,7 @@ const Hero = () => {
           
           {/* Subheading */}
           <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed">
-            स्पष्ट दृष्टि, सुंदर शैली। Premium eyewear crafted for Indian lifestyles with 
+            Clear Vision, Beautiful Style. Premium eyewear crafted for Indian lifestyles with 
             cutting-edge technology and timeless designs.
           </p>
           
@@ -47,7 +47,7 @@ const Hero = () => {
               size="lg" 
               className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6 backdrop-blur-sm"
             >
-              मुफ्त आंखों की जांच
+              Free Eye Test
             </Button>
           </div>
         </div>

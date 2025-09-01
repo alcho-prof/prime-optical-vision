@@ -9,12 +9,12 @@ const Footer = () => {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 gradient-primary rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">प</span>
+                <span className="text-white font-bold text-sm">P</span>
               </div>
-              <span className="text-xl font-bold">प्राइम ऑप्टिकल्स</span>
+              <span className="text-xl font-bold">Prime Opticals</span>
             </div>
             <p className="text-background/80 mb-4">
-              Vision care में आपका भरोसेमंद साझीदार, premium eyewear और expert optical services प्रदान करते हैं।
+              Your trusted partner in vision care, providing premium eyewear and expert optical services.
             </p>
             <div className="flex space-x-4">
               <Facebook className="h-5 w-5 text-background/60 hover:text-background cursor-pointer transition-colors" />
@@ -48,10 +48,10 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="font-bold mb-4">संपर्क जानकारी</h3>
+            <h3 className="font-bold mb-4">Contact Info</h3>
             <div className="space-y-2 text-background/80">
-              <p>123 मुख्य मार्ग</p>
-              <p>कनॉट प्लेस, नई दिल्ली 110001</p>
+              <p>123 Main Road</p>
+              <p>Connaught Place, New Delhi 110001</p>
               <p>+91 98765 43210</p>
               <p>info@primeopticals.in</p>
             </div>

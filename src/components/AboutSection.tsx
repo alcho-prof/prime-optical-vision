@@ -4,23 +4,23 @@ import { Eye, Shield, Award, Users } from "lucide-react";
 const features = [
   {
     icon: Eye,
-    title: "विशेषज्ञ नेत्र देखभाल",
-    description: "वर्षों के अनुभव के साथ प्रमाणित optometrists द्वारा comprehensive eye examinations।"
+    title: "Expert Eye Care",
+    description: "Comprehensive eye examinations by certified optometrists with years of experience."
   },
   {
     icon: Shield,
-    title: "गुणवत्ता की गारंटी",
-    description: "हमारी जीवनभर quality guarantee के साथ premium materials और craftsmanship।"
+    title: "Quality Guarantee",
+    description: "Premium materials and craftsmanship backed by our lifetime quality guarantee."
   },
   {
     icon: Award,
-    title: "पुरस्कार विजेता",
-    description: "Optical care और customer satisfaction में excellence के लिए पहचाने गए।"
+    title: "Award Winning",
+    description: "Recognized for excellence in optical care and customer satisfaction."
   },
   {
     icon: Users,
-    title: "हजारों का भरोसा",
-    description: "10,000+ संतुष्ट ग्राहक अपनी vision needs के लिए हम पर भरोसा करते हैं।"
+    title: "Trusted by Thousands",
+    description: "Over 10,000+ satisfied customers trust us with their vision needs."
   }
 ];
 
@@ -31,10 +31,11 @@ const AboutSection = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            प्राइम ऑप्टिकल्स क्यों चुनें?
+            Why Choose Prime Opticals?
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            हम exceptional vision care और premium eyewear solutions देने के लिए दशकों की optical expertise को cutting-edge technology के साथ मिलाते हैं।
+            We combine decades of optical expertise with cutting-edge technology to deliver 
+            exceptional vision care and premium eyewear solutions.
           </p>
         </div>
 
@@ -67,15 +68,15 @@ const AboutSection = () => {
           <div className="grid md:grid-cols-3 gap-8 text-center">
             <div>
               <div className="text-4xl md:text-5xl font-bold text-primary mb-2">15+</div>
-              <div className="text-muted-foreground text-lg">वर्षों का अनुभव</div>
+              <div className="text-muted-foreground text-lg">Years of Experience</div>
             </div>
             <div>
               <div className="text-4xl md:text-5xl font-bold text-primary mb-2">10K+</div>
-              <div className="text-muted-foreground text-lg">खुश ग्राहक</div>
+              <div className="text-muted-foreground text-lg">Happy Customers</div>
             </div>
             <div>
               <div className="text-4xl md:text-5xl font-bold text-primary mb-2">500+</div>
-              <div className="text-muted-foreground text-lg">फ्रेम स्टाइल्स</div>
+              <div className="text-muted-foreground text-lg">Frame Styles</div>
             </div>
           </div>
         </div>
