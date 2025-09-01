@@ -17,7 +17,7 @@ const AdminAuth = () => {
     password: ''
   });
 
-  const { signIn, signOut, user, isAdmin } = useAuth();
+  const { signIn, signOut, user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,11 +25,20 @@ const AdminAuth = () => {
     if (user && isAdmin) {
       navigate('/admin/dashboard');
     }
-    // If user is logged in but not admin, sign them out silently
-    else if (user && !isAdmin) {
-      signOut();
+    // Only sign out non-admin users if we're not in a loading state
+    // and the auth check has completed
+    else if (user && !isAdmin && !loading) {
+      // Add a small delay to ensure admin check has completed
+      const timeoutId = setTimeout(() => {
+        if (user && !isAdmin) {
+          signOut();
+          setError('Access denied. Admin privileges required.');
+        }
+      }, 1000);
+      
+      return () => clearTimeout(timeoutId);
     }
-  }, [user, isAdmin, navigate, signOut]);
+  }, [user, isAdmin, loading, navigate, signOut]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
