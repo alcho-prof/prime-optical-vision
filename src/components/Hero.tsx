@@ -6,11 +6,12 @@ const Hero = () => {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 gradient-hero opacity-80"></div>
+      <div className="absolute inset-0 gradient-hero opacity-90"></div>
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-20"
+        className="absolute inset-0 bg-cover bg-center opacity-15"
         style={{ backgroundImage: `url(${heroImage})` }}
       ></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
       
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center">
@@ -45,7 +46,7 @@ const Hero = () => {
             <Button 
               variant="outline" 
               size="lg" 
-              className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6 backdrop-blur-sm"
+              className="border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-6 backdrop-blur-sm transition-all duration-300"
             >
               Free Eye Test
             </Button>
