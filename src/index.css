@@ -8,26 +8,42 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 248 100% 99%;
+    --foreground: 260 15% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 260 15% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 260 15% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 260 20% 96%;
+    --secondary-foreground: 260 15% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 260 15% 95%;
+    --muted-foreground: 260 10% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Custom Prime Opticals Colors */
+    --violet-primary: 262 83% 58%;
+    --violet-secondary: 265 89% 65%;
+    --violet-light: 262 100% 95%;
+    --violet-glow: 262 83% 58%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(265 89% 65%));
+    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(265 89% 65%) 50%, hsl(270 91% 70%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(262 100% 98%));
+    
+    /* Shadows */
+    --shadow-violet: 0 10px 40px -15px hsl(262 83% 58% / 0.4);
+    --shadow-violet-lg: 0 25px 50px -12px hsl(262 83% 58% / 0.5);
+    --shadow-card: 0 4px 20px -8px hsl(262 20% 40% / 0.15);
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -56,26 +72,42 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 260 20% 8%;
+    --foreground: 260 15% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 260 20% 10%;
+    --card-foreground: 260 15% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 260 20% 10%;
+    --popover-foreground: 260 15% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 262 83% 65%;
+    --primary-foreground: 260 20% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 260 25% 15%;
+    --secondary-foreground: 260 15% 85%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 260 25% 12%;
+    --muted-foreground: 260 10% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 262 83% 65%;
+    --accent-foreground: 260 20% 8%;
+    
+    /* Dark mode custom colors */
+    --violet-primary: 262 83% 65%;
+    --violet-secondary: 265 89% 70%;
+    --violet-light: 260 25% 15%;
+    --violet-glow: 262 83% 65%;
+    
+    /* Dark gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 65%), hsl(265 89% 70%));
+    --gradient-hero: linear-gradient(135deg, hsl(262 83% 65%) 0%, hsl(265 89% 70%) 50%, hsl(270 91% 75%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(260 20% 10%), hsl(260 25% 12%));
+    
+    /* Dark shadows */
+    --shadow-violet: 0 10px 40px -15px hsl(262 83% 65% / 0.6);
+    --shadow-violet-lg: 0 25px 50px -12px hsl(262 83% 65% / 0.7);
+    --shadow-card: 0 4px 20px -8px hsl(262 40% 20% / 0.3);
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -100,6 +132,58 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+  
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  .shadow-violet {
+    box-shadow: var(--shadow-violet);
+  }
+  
+  .shadow-violet-lg {
+    box-shadow: var(--shadow-violet-lg);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+}
+
+@layer utilities {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px hsl(var(--violet-glow) / 0.3);
+  }
+  to {
+    box-shadow: 0 0 30px hsl(var(--violet-glow) / 0.6);
   }
 }
