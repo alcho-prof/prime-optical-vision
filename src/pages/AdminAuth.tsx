@@ -21,18 +21,15 @@ const AdminAuth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // If user is already logged in and is admin, redirect to dashboard
     if (user && isAdmin) {
       navigate('/admin/dashboard');
-    } else if (user && !isAdmin) {
-      // Only show error if user just tried to login (not on page load)
-      if (formData.email || formData.password) {
-        setError('Access denied. Admin privileges required.');
-      }
-    } else if (!user) {
-      // Clear error when no user is logged in
-      setError('');
     }
-  }, [user, isAdmin, navigate, formData.email, formData.password]);
+    // If user is logged in but not admin, sign them out silently
+    else if (user && !isAdmin) {
+      signOut();
+    }
+  }, [user, isAdmin, navigate, signOut]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -51,8 +48,12 @@ const AdminAuth = () => {
       const { error } = await signIn(formData.email, formData.password);
       if (error) {
         setError('Invalid admin credentials. Please check your email and password.');
+      } else {
+        // Wait a moment for auth state to update, then check admin status
+        setTimeout(() => {
+          // This will be handled by useEffect once auth state updates
+        }, 100);
       }
-      // Success case is handled by useEffect
     } catch (err) {
       setError('Login failed. Please try again.');
     } finally {
