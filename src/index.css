@@ -29,7 +29,9 @@ All colors MUST be HSL.
     --accent: 262 83% 58%;
     --accent-foreground: 0 0% 100%;
 
-    /* Custom Prime Opticals Colors */
+    /* Custom Prime Opticals Colors - Indian Theme */
+    --saffron-primary: 39 100% 50%;
+    --green-primary: 120 100% 25%;
     --violet-primary: 262 83% 58%;
     --violet-secondary: 265 89% 65%;
     --violet-light: 262 100% 95%;

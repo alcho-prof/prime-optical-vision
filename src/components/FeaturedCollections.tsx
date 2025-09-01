@@ -6,23 +6,23 @@ import collectionImage from "@/assets/glasses-collection.jpg";
 const collections = [
   {
     id: 1,
-    name: "Classic Frames",
-    description: "Timeless designs that never go out of style",
-    price: "From $99",
+    name: "क्लासिक फ्रेम्स",
+    description: "समयहीन डिज़ाइन जो कभी पुराने नहीं होते",
+    price: "₹7,999 से शुरू",
     image: collectionImage,
   },
   {
     id: 2,
-    name: "Sport Collection",
-    description: "Performance eyewear for active lifestyles",
-    price: "From $149",
+    name: "स्पोर्ट्स कलेक्शन",
+    description: "सक्रिय जीवनशैली के लिए performance eyewear",
+    price: "₹11,999 से शुरू",
     image: collectionImage,
   },
   {
     id: 3,
-    name: "Designer Series",
-    description: "Luxury frames from premium brands",
-    price: "From $299",
+    name: "डिज़ाइनर सीरीज़",
+    description: "प्रीमियम ब्रांड्स के luxury frames",
+    price: "₹24,999 से शुरू",
     image: collectionImage,
   },
 ];
@@ -34,10 +34,10 @@ const FeaturedCollections = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Featured Collections
+            फीचर्ड कलेक्शन्स
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Explore our carefully curated selection of premium eyewear designed to enhance your vision and style.
+            हमारे सावधानी से चुने गए premium eyewear का संग्रह जो आपकी दृष्टि और style को बढ़ाने के लिए डिज़ाइन किया गया।
           </p>
         </div>
 
@@ -89,7 +89,7 @@ const FeaturedCollections = () => {
         {/* View All Button */}
         <div className="text-center">
           <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground shadow-card">
-            View All Collections
+            सभी कलेक्शन्स देखें
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>

@@ -12,7 +12,7 @@ const Navigation = () => {
               <span className="text-white font-bold text-sm">P</span>
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Prime Opticals
+              प्राइम ऑप्टिकल्स
             </span>
           </div>
 

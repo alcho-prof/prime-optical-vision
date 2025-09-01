@@ -24,16 +24,16 @@ const Hero = () => {
           
           {/* Heading */}
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            Vision That
+            India's Premier
             <span className="block bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent">
-              Defines You
+              Eyewear Destination
             </span>
           </h1>
           
           {/* Subheading */}
           <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Discover premium eyewear that combines cutting-edge technology with timeless style. 
-            Your perfect vision starts here.
+            स्पष्ट दृष्टि, सुंदर शैली। Premium eyewear crafted for Indian lifestyles with 
+            cutting-edge technology and timeless designs.
           </p>
           
           {/* CTA Buttons */}
@@ -47,7 +47,7 @@ const Hero = () => {
               size="lg" 
               className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6 backdrop-blur-sm"
             >
-              Book Eye Test
+              मुफ्त आंखों की जांच
             </Button>
           </div>
         </div>
