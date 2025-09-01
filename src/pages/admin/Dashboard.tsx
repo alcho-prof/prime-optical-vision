@@ -11,10 +11,15 @@ import {
   TrendingUp, 
   AlertTriangle,
   Eye,
-  Plus
+  Plus,
+  LogOut,
+  Settings,
+  BarChart3,
+  Bell
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { toast } from '@/hooks/use-toast';
 
 interface DashboardStats {
   totalOrders: number;
@@ -23,6 +28,8 @@ interface DashboardStats {
   totalRevenue: number;
   pendingOrders: number;
   lowStockProducts: number;
+  recentOrders: any[];
+  topProducts: any[];
 }
 
 const Dashboard = () => {
@@ -32,76 +39,69 @@ const Dashboard = () => {
     totalCustomers: 0,
     totalRevenue: 0,
     pendingOrders: 0,
-    lowStockProducts: 0
+    lowStockProducts: 0,
+    recentOrders: [],
+    topProducts: [],
   });
-  const [recentOrders, setRecentOrders] = useState([]);
-  const [lowStockProducts, setLowStockProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAdmin) {
-      navigate('/');
-      return;
-    }
-    
-    fetchDashboardData();
-  }, [isAdmin, navigate]);
+    fetchDashboardStats();
+  }, []);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardStats = async () => {
     try {
-      // Fetch orders statistics
+      // Fetch orders stats
       const { data: orders } = await supabase
         .from('orders')
-        .select('id, total_amount, status, created_at');
+        .select('*');
 
-      // Fetch products count
+      // Fetch products stats  
       const { data: products } = await supabase
         .from('products')
-        .select('id, name, is_active');
+        .select('*');
 
-      // Fetch customers count
-      const { data: profiles } = await supabase
+      // Fetch customers stats
+      const { data: customers } = await supabase
         .from('profiles')
-        .select('id');
+        .select('*');
 
-      // Fetch inventory for low stock
-      const { data: inventory } = await supabase
-        .from('inventory')
+      // Fetch recent orders with customer info
+      const { data: recentOrders } = await supabase
+        .from('orders')
         .select(`
-          id,
-          quantity_available,
-          low_stock_threshold,
-          products!inner(name)
+          *,
+          order_items(quantity, price)
         `)
-        .filter('quantity_available', 'lt', 'low_stock_threshold');
+        .order('created_at', { ascending: false })
+        .limit(5);
 
-      const totalRevenue = orders?.reduce((sum, order) => {
-        return sum + (parseFloat(String(order.total_amount)) || 0);
-      }, 0) || 0;
-
+      // Calculate stats
+      const totalOrders = orders?.length || 0;
+      const totalProducts = products?.length || 0;
+      const totalCustomers = customers?.length || 0;
+      const totalRevenue = orders?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
       const pendingOrders = orders?.filter(order => order.status === 'pending').length || 0;
+      const lowStockProducts = products?.filter(product => product.stock_quantity < 10).length || 0;
 
       setStats({
-        totalOrders: orders?.length || 0,
-        totalProducts: products?.filter(p => p.is_active).length || 0,
-        totalCustomers: profiles?.length || 0,
+        totalOrders,
+        totalProducts,
+        totalCustomers,
         totalRevenue,
         pendingOrders,
-        lowStockProducts: inventory?.length || 0
+        lowStockProducts,
+        recentOrders: recentOrders || [],
+        topProducts: products?.slice(0, 5) || [],
       });
 
-      // Set recent orders
-      const recent = orders?.slice(0, 5) || [];
-      setRecentOrders(recent);
-
-      // Set low stock products
-      setLowStockProducts(inventory?.slice(0, 5) || []);
-
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+    } catch (error: any) {
+      toast({
+        title: 'Error fetching dashboard data',
+        description: error.message,
+        variant: 'destructive',
+      });
     } finally {
       setLoading(false);
     }
@@ -109,162 +109,233 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
+      <div className="p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-6 space-y-6">
+      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, {user?.email}</p>
+          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+          <p className="text-gray-600">Welcome back! Here's what's happening at Prime Opticals.</p>
         </div>
-        <Button onClick={() => navigate('/admin/products')}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Product
-        </Button>
+        <div className="flex space-x-3">
+          <Button onClick={() => navigate('/admin/products')} className="bg-amber-600 hover:bg-amber-700">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Product
+          </Button>
+          <Button variant="outline" onClick={() => navigate('/admin/orders')}>
+            <Eye className="w-4 h-4 mr-2" />
+            View Orders
+          </Button>
+        </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalOrders}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.pendingOrders} pending
-            </p>
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-blue-600">Total Orders</p>
+                <p className="text-3xl font-bold text-blue-900">{stats.totalOrders}</p>
+                <p className="text-sm text-blue-600">+12% from last month</p>
+              </div>
+              <div className="w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center">
+                <ShoppingCart className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Products</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalProducts}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.lowStockProducts} low stock
-            </p>
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-green-600">Total Revenue</p>
+                <p className="text-3xl font-bold text-green-900">₹{stats.totalRevenue.toLocaleString()}</p>
+                <p className="text-sm text-green-600">+8% from last month</p>
+              </div>
+              <div className="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalCustomers}</div>
-            <p className="text-xs text-muted-foreground">
-              Registered users
-            </p>
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-purple-600">Total Products</p>
+                <p className="text-3xl font-bold text-purple-900">{stats.totalProducts}</p>
+                <p className="text-sm text-purple-600">{stats.lowStockProducts} low stock</p>
+              </div>
+              <div className="w-12 h-12 bg-purple-200 rounded-full flex items-center justify-center">
+                <Package className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹{stats.totalRevenue.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              <TrendingUp className="inline h-3 w-3 mr-1" />
-              From all orders
-            </p>
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-orange-600">Total Customers</p>
+                <p className="text-3xl font-bold text-orange-900">{stats.totalCustomers}</p>
+                <p className="text-sm text-orange-600">+15% from last month</p>
+              </div>
+              <div className="w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center">
+                <Users className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Orders and Low Stock */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Quick Actions & Alerts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Quick Actions */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Common administrative tasks</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <Button 
+                variant="outline" 
+                className="h-20 flex flex-col space-y-2"
+                onClick={() => navigate('/admin/products')}
+              >
+                <Package className="w-6 h-6" />
+                <span>Manage Products</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="h-20 flex flex-col space-y-2"
+                onClick={() => navigate('/admin/orders')}
+              >
+                <ShoppingCart className="w-6 h-6" />
+                <span>Process Orders</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="h-20 flex flex-col space-y-2"
+                onClick={() => navigate('/admin/customers')}
+              >
+                <Users className="w-6 h-6" />
+                <span>View Customers</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="h-20 flex flex-col space-y-2"
+                onClick={() => navigate('/admin/analytics')}
+              >
+                <BarChart3 className="w-6 h-6" />
+                <span>View Analytics</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Alerts */}
         <Card>
           <CardHeader>
+            <CardTitle className="flex items-center">
+              <Bell className="w-5 h-5 mr-2" />
+              Alerts
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {stats.pendingOrders > 0 && (
+              <div className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                <AlertTriangle className="w-5 h-5 text-yellow-600" />
+                <div>
+                  <p className="text-sm font-medium text-yellow-800">
+                    {stats.pendingOrders} Pending Orders
+                  </p>
+                  <p className="text-xs text-yellow-600">Requires attention</p>
+                </div>
+              </div>
+            )}
+            
+            {stats.lowStockProducts > 0 && (
+              <div className="flex items-center space-x-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                <Package className="w-5 h-5 text-red-600" />
+                <div>
+                  <p className="text-sm font-medium text-red-800">
+                    {stats.lowStockProducts} Low Stock Items
+                  </p>
+                  <p className="text-xs text-red-600">Restock needed</p>
+                </div>
+              </div>
+            )}
+
+            {stats.pendingOrders === 0 && stats.lowStockProducts === 0 && (
+              <div className="text-center py-4">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <TrendingUp className="w-6 h-6 text-green-600" />
+                </div>
+                <p className="text-sm text-gray-600">All systems running smoothly!</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Orders */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
             <CardTitle>Recent Orders</CardTitle>
             <CardDescription>Latest customer orders</CardDescription>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <Button variant="outline" onClick={() => navigate('/admin/orders')}>
+            View All Orders
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {stats.recentOrders.length > 0 ? (
             <div className="space-y-4">
-              {recentOrders.length > 0 ? (
-                recentOrders.map((order: any) => (
-                  <div key={order.id} className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium">Order #{order.id.slice(0, 8)}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(order.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={order.status === 'pending' ? 'destructive' : 'default'}>
-                        {order.status}
-                      </Badge>
-                      <span className="text-sm font-medium">₹{order.total_amount}</span>
-                    </div>
+              {stats.recentOrders.map((order) => (
+                <div key={order.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                  <div>
+                    <p className="font-medium">Order #{order.id.slice(0, 8)}</p>
+                    <p className="text-sm text-gray-600">{order.customer_email}</p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(order.created_at).toLocaleDateString()}
+                    </p>
                   </div>
-                ))
-              ) : (
-                <p className="text-muted-foreground text-center py-4">No orders yet</p>
-              )}
-            </div>
-            <Button 
-              variant="outline" 
-              className="w-full mt-4"
-              onClick={() => navigate('/admin/orders')}
-            >
-              <Eye className="w-4 h-4 mr-2" />
-              View All Orders
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Low Stock Alert</CardTitle>
-            <CardDescription>Products running low on inventory</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {lowStockProducts.length > 0 ? (
-                lowStockProducts.map((item: any) => (
-                  <div key={item.id} className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium">{item.products.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.quantity_available} units left
-                      </p>
-                    </div>
-                    <Badge variant="destructive">
-                      <AlertTriangle className="w-3 h-3 mr-1" />
-                      Low Stock
+                  <div className="text-right">
+                    <p className="font-semibold">₹{order.total_amount?.toLocaleString()}</p>
+                    <Badge className={
+                      order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                      order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
+                      order.status === 'confirmed' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }>
+                      {order.status}
                     </Badge>
                   </div>
-                ))
-              ) : (
-                <p className="text-muted-foreground text-center py-4">All products well stocked</p>
-              )}
+                </div>
+              ))}
             </div>
-            <Button 
-              variant="outline" 
-              className="w-full mt-4"
-              onClick={() => navigate('/admin/inventory')}
-            >
-              <Package className="w-4 h-4 mr-2" />
-              View Inventory
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+          ) : (
+            <div className="text-center py-8">
+              <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No recent orders</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
