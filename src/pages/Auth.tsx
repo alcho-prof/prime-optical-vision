@@ -199,6 +199,20 @@ const Auth = () => {
               </form>
             </TabsContent>
           </Tabs>
+
+          {/* Link to Admin Login */}
+          <div className="mt-6 text-center border-t border-border pt-4">
+            <p className="text-xs text-muted-foreground mb-2">
+              Are you an administrator?
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/admin/auth')}
+              className="text-xs"
+            >
+              Admin Portal Login
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
