@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="text-align: center; margin-top: 50px;">
+    <h1>Welcome to Prime Optical</h1>
+    <p>Your one-stop shop for premium eyewear.</p>
+
+    <div style="margin-top: 20px;">
+        {% if user.is_authenticated %}
+        <p>Hello, {{ user.username }}! <a href="{% url 'logout' %}">Logout</a></p>
+        {% if user.is_staff %}
+        <p><a href="/admin/">Go to Admin Dashboard</a></p>
+        {% endif %}
+        {% else %}
+        <a href="{% url 'login' %}" style="margin-right: 15px;">Login</a>
+        <a href="#">Register</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

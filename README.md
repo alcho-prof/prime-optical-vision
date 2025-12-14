@@ -1,73 +1,66 @@
-# Welcome to your Lovable project
+# Prime Optical Vision
 
-## Project info
+An optical store management system with a Django backend and React frontend.
 
-**URL**: https://lovable.dev/projects/7e7bc6b2-4840-4bf2-8cde-e5e4b68c309b
+## Project Structure
 
-## How can I edit this code?
+- `frontend/`: React + Vite + TailwindCSS application.
+- `backend/`: Django + Django REST Framework + MySQL application.
 
-There are several ways of editing your application.
+## Prerequisites
 
-**Use Lovable**
+- Node.js & npm
+- Python 3.10+
+- MySQL Server
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7e7bc6b2-4840-4bf2-8cde-e5e4b68c309b) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+### Backend
 
-**Use your preferred IDE**
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. Create a virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+3. Install dependencies:
+   ```bash
+   pip install django djangorestframework mysqlclient django-cors-headers pymysql
+   ```
+   *(Note: Ensure MySQL dependencies are met for your OS)*
 
-Follow these steps:
+4. Run Migrations:
+   ```bash
+   python manage.py migrate
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+5. Start the server:
+   ```bash
+   python manage.py runserver
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Frontend
 
-# Step 3: Install the necessary dependencies.
-npm i
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-**Edit a file directly in GitHub**
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Documentation
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/7e7bc6b2-4840-4bf2-8cde-e5e4b68c309b) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- See `backend/README_BACKEND.md` for API details.
