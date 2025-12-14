@@ -21,7 +21,8 @@ def product_detail(request, slug):
     Display full details for a single active product.
     Handles Inquiry Form submission.
     """
-    product = get_object_or_404(Product, slug=slug, is_active=True)
+    # Security: Ensure both Product and its Category are active
+    product = get_object_or_404(Product, slug=slug, is_active=True, category__is_active=True)
     variants = product.variants.all()
     
     if request.method == 'POST':

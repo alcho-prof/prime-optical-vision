@@ -1,147 +1,37 @@
 # Project Activity Report
 
-This document records all user requests, system actions, file modifications, and specific code changes executed during the session.
+**Project:** Prime Optical Vision  
+**Date:** 2025-12-14  
+**Environment:** production-grade Django modular monolith (Phase 1)
+
+This report chronicles the development session from initialization to Phase 1 completion.
+
+## 📋 Activity Log
+
+| ID | User Request | Action Category | Actions Taken | Key Files Modified |
+|:---|:---|:---|:---|:---|
+| **01** | **Delete Frontend** | 🗑️ Cleanup | Removed legacy `frontend/` directory to prepare for Django migration. | `frontend/` (Deleted) |
+| **02** | **Delete Backend** | 🗑️ Cleanup | Removed legacy `backend/` directory to ensure a clean slate. | `backend/` (Deleted) |
+| **03** | **Architecture Planning** | 📐 Architecture | Designed "Modular Monolith" blueprint. Defined Roles, Stack (Django/MySQL), and Phase 1 scope. | `ARCHITECTURE_PLAN.md` |
+| **04** | **Project Scaffolding** | 🏗️ Setup | • Installed Django<br>• Created custom script `scaffold.py`<br>• Structured `backend/apps/` layout<br>• Configured modular settings (`base`, `dev`, `prod`). | `backend/`<br>`config/settings/base.py`<br>`manage.py` |
+| **05** | **Auth & Admin** | 🔐 Security | • Implemented Custom `User` Model<br>• Configured Admin Panel<br>• Created Login/Home templates. | `apps/users/models.py`<br>`apps/users/admin.py`<br>`templates/registration/` |
+| **06** | **Phase 1 Planning** | 📐 Architecture | Defined strict MVP scope: **Digital Catalog** only (No Cart, No Auth). Selected Django Templates for SEO. | `PHASE_1_ARCHITECTURE.md` |
+| **07** | **Catalog Implementation** | 💻 Feature | • Created `Category`, `Product`, `ProductVariant` models<br>• Installed `Pillow`<br>• Registered Models in Admin. | `apps/catalog/models.py`<br>`apps/catalog/admin.py` |
+| **08** | **Server Debugging** | 🐞 Fix | Detected and killed "Address already in use" process. Restarted server. | *System Logic* |
+| **09** | **Catalog Views** | 💻 Feature | • Implemented `product_list` and `product_detail`<br>• Created Grid/Detail Templates<br>• Configured URL routing. | `apps/catalog/views.py`<br>`templates/catalog/`<br>`config/urls.py` |
+| **10** | **Inquiry Flow** | 🎯 Feature | • Created `inquiries` app<br>• Built `InquiryForm` & `Inquiry` model<br>• Added Email Notification logic to views. | `apps/inquiries/`<br>`apps/catalog/views.py`<br>`templates/catalog/product_detail.html` |
+| **11** | **Git Merge** | 🔀 Version Control | • Fixed repo permissions<br>• Committed to `team_lead`<br>• Merged to `development`<br>• Pushed to GitHub. | *Git History* |
+| **12** | **Final Debugging** | 🐞 Fix | • **Fix 1:** Enabled Console Email Backend (was silent).<br>• **Fix 2:** Enforced `category__is_active=True` check to prevent orphan product access. | `config/settings/base.py`<br>`apps/catalog/views.py` |
+| **13** | **Documentation** | 📝 Docs | Rewrote README and Architecture docs into standardized tables. | `README.md`<br>`PHASE_1_ARCHITECTURE.md` |
 
 ---
 
-## 1. Request: Delete Frontend
-**User Command:** "delete the frondend folder with all the files"  
-**Date:** 2025-12-14
+## 🏗️ System State Summary
 
-### Actions Taken
-*   Executed shell command to remove the directory.
-
-### Files Changed
-*   **Deleted Directory:** `frontend/` (and all contained files).
-
----
-
-## 2. Request: Delete Backend
-**User Command:** "delete the backend folder"  
-**Date:** 2025-12-14
-
-### Actions Taken
-*   Executed shell command to remove the directory.
-
-### Files Changed
-*   **Deleted Directory:** `backend/` (and all contained files).
-
----
-
-## 3. Request: Architecture Planning
-**User Command:** "Design and plan a basic yet scalable optical business website..."  
-**Date:** 2025-12-14
-
-### Actions Taken
-*   Analyzed requirements for "Prime Optical Website".
-*   Drafted architectural blueprint focusing on Modular Monolith Django structure.
-
-### Files Changed
-*   **Created File:** `ARCHITECTURE_PLAN.md`
-    *   *Content:* Added detailed Role analysis, System Architecture (Django + MySQL), Database Schema design, and Development Phases.
-
----
-
-## 4. Request: Project Scaffolding
-**User Command:** "use django template for client layer ... use this as root folder structure"  
-**Date:** 2025-12-14
-
-### Actions Taken
-*   Installed Django via `pip`.
-*   Created `scaffold.py` script to generate the requested folder structure automatically.
-*   Refactored standard Django `startproject` structure to match the "Modular" design (separating `apps`, `config`, `settings`).
-
-### Files Changed
-*   **Created Directory:** `backend/`
-*   **Modified File:** `backend/config/settings/base.py`
-    *   *Change:* Updated `BASE_DIR` to point to the correct root.
-    *   *Change:* Added `sys.path.insert(0, ...)` to include the new `apps/` directory.
-    *   *Change:* Added local apps (`apps.core`, `apps.users`, `apps.catalog`, etc.) to `INSTALLED_APPS`.
-    *   *Change:* Configured `TEMPLATES['DIRS']` to `[BASE_DIR / 'templates']`.
-    *   *Change:* Defined `STATICFILES_DIRS` and `MEDIA_ROOT`.
-*   **Modified File:** `backend/manage.py`
-    *   *Change:* Changed default settings module to `'config.settings.dev'`.
-*   **Modified File:** `backend/config/wsgi.py` & `backend/config/asgi.py`
-    *   *Change:* Changed default settings module to `'config.settings.dev'`.
-*   **Database:** Initialized `db.sqlite3` via migrations.
-
----
-
-## 5. Request: Admin & User Authentication
-**User Command:** "create the backend for admin and users providing login"  
-**Date:** 2025-12-14
-
-### Actions Taken
-*   Implemented Custom User Model to support future extensions (phone number, etc.).
-*   Reset database to apply the custom auth model.
-*   Created Superuser (`admin`).
-*   Created Login templates.
-
-### Files Changed
-*   **Created File:** `backend/apps/users/models.py`
-    *   *Content:* Defined `class User(AbstractUser)` with `phone_number` and `is_verified` fields.
-*   **Created File:** `backend/apps/users/admin.py`
-    *   *Content:* Registered `User` model using `UserAdmin` to make it visible in the Admin Panel.
-*   **Modified File:** `backend/config/settings/base.py`
-    *   *Change:* Added `AUTH_USER_MODEL = 'users.User'`.
-    *   *Change:* Added `LOGIN_REDIRECT_URL = 'home'` and `LOGOUT_REDIRECT_URL = 'home'`.
-*   **Modified File:** `backend/config/urls.py`
-    *   *Change:* Added `path('accounts/', include('django.contrib.auth.urls'))`.
-    *   *Change:* Added root path `path('', ...)` serving the home template.
-*   **Created File:** `backend/templates/registration/login.html`
-    *   *Content:* created a standard login form.
-*   **Created File:** `backend/templates/pages/home.html`
-    *   *Content:* Added conditional logic to show "Login" or "Logout / Admin" links based on user state.
-
----
-
-## 6. Request: Phase 1 Architecture Planning
-**User Command:** "Build a stable, production-ready digital catalog platform... PHASE 1 – Digital Catalog & Brand Presence (MVP)"  
-**Date:** 2025-12-14
-
-### Actions Taken
-*   Defined strictly scoped Phase 1 requirements (No Auth, No Cart, No Payments).
-*   Chose **Django Templates** over React for SEO and simplicity in Phase 1.
-*   Designed data models for Catalog (Category, Product, Variant) and Inquiries.
-*   Outlined App responsibilities (`core`, `catalog`, `content`, `lenses`, `inquiries`).
-
-### Files Changed
-*   **Created File:** `PHASE_1_ARCHITECTURE.md`
-    *   *Content:* Detailed blueprint for the MVP phase, covering Architecture, Folder Structure, Data Models, and Workflows.
-
----
-
-## 7. Request: Implement Core & Catalog Models
-**User Command:** "Implement Core + Catalog Models... 1️⃣ core/models.py ... 2️⃣ catalog/models.py"  
-**Date:** 2025-12-14
-
-### Actions Taken
-*   Implemented `TimeStampedModel` in `core` app.
-*   Implemented `Category`, `Product`, and `ProductVariant` in `catalog` app.
-*   Installed `Pillow` library for image handling.
-*   Applied migrations.
-*   Registered models in `catalog/admin.py` with inline variants.
-
-### Files Changed
-*   **Created File:** `backend/apps/core/models.py`
-    *   *Content:* Abstract `TimeStampedModel` with `created_at` and `updated_at`.
-*   **Created File:** `backend/apps/catalog/models.py`
-    *   *Content:* 
-        *   `Category`: Hierarchical with self-referencing ForeignKey.
-        *   `Product`: Linked to Category, includes `price_range` (textual).
-        *   `ProductVariant`: Linked to Product, includes color, image, and `in_stock` flag.
-*   **Created File:** `backend/apps/catalog/admin.py`
-    *   *Content:* `ProductAdmin` with filter, search, and `ProductVariantInline`.
-*   **Modified File:** `backend/apps/catalog/migrations/0001_initial.py` (Generated)
-*   **System:** Installed `Pillow`.
-
----
-
-## 8. Request: Fix Server Port Conflict
-**User Command:** "check the terminal and run" (Response to port already in use error)  
-**Date:** 2025-12-14
-
-### Actions Taken
-*   Detected port 8000 was occupied by a detached process.
-*   Killed the specific process using `lsof` and `kill`.
-*   Restarted the Django development server successfully.
+| Component | Status | Description |
+|:---|:---|:---|
+| **Architecture** | 🟢 Stable | Modular Monolith (Apps isolated in `backend/apps/`) |
+| **Catalog** | 🟢 Complete | Categories, Products, Variants implemented & browsable. |
+| **Lead Gen** | 🟢 Complete | Inquiry Forms working with Email Notifs to Console. |
+| **Security** | 🟢 Secure | CSRF enabled. Dead-links for inactive items handled. |
+| **DevOps** | 🟡 Local | Running on SQLite/Dev Server. Ready for Deployment. |
