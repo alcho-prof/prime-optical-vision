@@ -24,7 +24,7 @@ A scalable, modular Django-based platform for Prime Optical. This project replac
 
 | Component | Technology | Reasoning |
 | :--- | :--- | :--- |
-| **Backend Framework** | **Django 5.0+** | Rapid development, built-in Admin, strict security patterns. |
+| **Backend Framework** | **Django 6.0+** | Rapid development, built-in Admin, strict security patterns. |
 | **Language** | **Python 3.10+** | Enterprise standard, high maintainability. |
 | **Database** | **SQLite (Dev) / MySQL (Prod)** | Proven relational data integrity. |
 | **Frontend** | **Django Templates (SSR)** | Superior SEO for Catalog, faster initial load, simpler architecture. |
@@ -81,13 +81,41 @@ A scalable, modular Django-based platform for Prime Optical. This project replac
 
 ---
 
-## ✅ Phase 1 Deliverables Checklist
+## ✅ Project Roadmap & Status Checklist
 
-| Feature | Description | Status |
-| :--- | :--- | :--- |
-| **Product Catalog** | Hierarchical Categories, Products, and Variants | ✔️ Complete |
-| **Read-Only Views** | Product List and Detail pages with SEO-friendly URLs | ✔️ Complete |
-| **Lead Generation** | Inquiry form on Product Page (replaces Cart) | ✔️ Complete |
-| **Admin Panel** | Full management for Catalog and Inquiries | ✔️ Complete |
-| **Email Notifs** | System sends email to Admin upon new inquiry | ✔️ Complete |
-| **Security** | Inactive products/categories are hidden; CSRF protection enabled | ✔️ Complete |
+### Phase 1: Digital Catalog & Brand Presence (MVP)
+*Goal: Establish online presence, product discovery, and lead generation without e-commerce complexity.*
+
+| Task ID | Feature | Description | Status |
+| :---: | :--- | :--- | :---: |
+| **1.1** | **System Setup** | Django scaffold, folder structure, Modular Monolith design. | ✅ Completed |
+| **1.2** | **Authentication** | Custom User model, Admin panel setup, Superuser creation. | ✅ Completed |
+| **1.3** | **Product Catalog** | Models for Categories, Products, Variants. | ✅ Completed |
+| **1.4** | **Read-Only Views** | Product List and Detailed Product pages (SEO-friendly). | ✅ Completed |
+| **1.5** | **Lead Generation** | Inquiry Form on product pages (Database + Email trigger). | ✅ Completed |
+| **1.6** | **Static Content** | Home, About, Contact pages. | ✅ Completed |
+| **1.7** | **Security** | CSRF protection, Inactive product masking, Secure admin. | ✅ Completed |
+| **1.8** | **Basic Deployment** | Git version control, Requirements.txt, Environment configs. | ✅ Completed |
+
+### Phase 2: Basic E-Commerce (Planned)
+*Goal: Enable transactional capabilities and user accounts.*
+
+| Task ID | Feature | Description | Status |
+| :---: | :--- | :--- | :---: |
+| **2.1** | **User Accounts** | Customer Registration, Login/Logout, Profile Management. | ⏳ Pending |
+| **2.2** | **Shopping Cart** | Session-based cart, Add/Remove items, Update quantity. | ⏳ Pending |
+| **2.3** | **Lens Selection** | Basic lens type selection (Single Vision, Zero Power) logic. | ⏳ Pending |
+| **2.4** | **Checkout Flow** | Address selection, Order summary, "Cash on Delivery" support. | ⏳ Pending |
+| **2.5** | **Order Management** | User order history, Admin order processing/status updates. | ⏳ Pending |
+| **2.6** | **Basic Search** | Keyword search for products and categories. | ⏳ Pending |
+
+### Phase 3: Advanced Optical Features (Future)
+*Goal: Full-service optical platform with advanced prescription handling.*
+
+| Task ID | Feature | Description | Status |
+| :---: | :--- | :--- | :---: |
+| **3.1** | **Prescription Logic** | Complex Rx validation (Sphere, Cylinder, Axis) & storage. | 🔮 Planned |
+| **3.2** | **Payment Gateway** | Integration with Razorpay/Stripe for online payments. | 🔮 Planned |
+| **3.3** | **Virtual Try-On** | AR integration to visualize frames on user photos. | 🔮 Planned |
+| **3.4** | **Appointments** | Eye test booking system with doctor availability. | 🔮 Planned |
+| **3.5** | **Advanced Analytics** | Sales reports, Most viewed products, User behavior tracking. | 🔮 Planned |
