@@ -21,8 +21,8 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # User Authentication (login, logout, password reset)
-    path('accounts/', include('django.contrib.auth.urls')),
+    # User Authentication (login, register, profile)
+    path('accounts/', include('apps.accounts.urls')),
     
     # Home Page
     path('', TemplateView.as_view(template_name='pages/home.html'), name='home'),

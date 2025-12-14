@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container"
+    style="max-width: 500px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <h2 style="text-align: center; margin-bottom: 30px;">Create Account</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div style="background-color: #ffebee; color: #c62828; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
+            <p>Please correct the errors below:</p>
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        {% for field in form %}
+        <div style="margin-bottom: 20px;">
+            <label for="{{ field.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                {{ field.label }}
+                {% if field.field.required %}*{% endif %}
+            </label>
+            {{ field }}
+            {% if field.help_text %}
+            <small style="color: #666;">{{ field.help_text }}</small>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <button type="submit"
+            style="width: 100%; background: #333; color: white; padding: 12px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">
+            Register
+        </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <p>Already have an account? <a href="{% url 'accounts:login' %}">Log In</a></p>
+    </div>
+</div>
+{% endblock %}

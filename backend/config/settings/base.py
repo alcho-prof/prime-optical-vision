@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'apps.billing',
     'apps.content',
     'apps.inquiries',
+    'apps.accounts',
 ]
 
 MIDDLEWARE = [
@@ -144,7 +145,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Redirects
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'catalog:product_list'
 LOGOUT_REDIRECT_URL = 'home'
 
 # Email Configuration (Phase 1: Console Backend)

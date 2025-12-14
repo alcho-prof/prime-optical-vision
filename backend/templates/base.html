@@ -1,7 +1,104 @@
 <!DOCTYPE html>
-<html>
-<head><title>Prime Optical</title></head>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prime Optical</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #000;
+        }
+
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #555;
+        }
+
+        nav a:hover {
+            color: #000;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background: #000;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
 <body>
-{% block content %}{% endblock %}
+
+    <header>
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="logo">Prime Optical</a>
+
+            <nav>
+                <a href="{% url 'catalog:product_list' %}">Eyewear</a>
+
+                {% if user.is_authenticated %}
+                <span style="color: #999; margin-left: 10px;">Hi, {{ user.first_name|default:user.username }}</span>
+                <a href="{% url 'accounts:profile' %}">Profile</a>
+                {% if user.is_staff %}
+                <a href="/admin/">Admin</a>
+                {% endif %}
+                <form action="{% url 'accounts:logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit"
+                        style="background: none; border: none; cursor: pointer; color: #d32f2f; font-size: 1rem; margin-left: 15px; padding: 0;">Logout</button>
+                </form>
+                {% else %}
+                <a href="{% url 'accounts:login' %}">Login</a>
+                <a href="{% url 'accounts:register' %}" class="btn-primary" style="color: #fff; margin-left: 15px;">Sign
+                    Up</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer style="text-align: center; padding: 40px; color: #888; border-top: 1px solid #eee; margin-top: 50px;">
+        &copy; 2025 Prime Optical Vision. Phase 2 (Development).
+    </footer>
+
 </body>
+
 </html>
