@@ -116,6 +116,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Authentication Backends
+AUTHENTICATION_BACKENDS = [
+    'apps.accounts.backends.PasswordlessAuthBackend',  # Custom: Checks for passwordless flag first
+    'django.contrib.auth.backends.ModelBackend',       # Default: Checks standard password
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

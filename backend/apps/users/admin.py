@@ -16,12 +16,12 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('email',)
     
     fieldsets = UserAdmin.fieldsets + (
-        ('Additional Info', {'fields': ('phone_number', 'is_verified')}),
+        ('Additional Info', {'fields': ('phone_number', 'is_verified', 'can_login_no_password')}),
     )
     
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'username', 'phone_number', 'is_verified')}
+            'fields': ('email', 'username', 'phone_number', 'is_verified', 'can_login_no_password')}
         ),
     )

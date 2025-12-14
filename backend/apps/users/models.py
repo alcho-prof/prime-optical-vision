@@ -11,6 +11,7 @@ class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True, help_text="Contact phone number")
     is_verified = models.BooleanField(default=False, help_text="Email/Phone verification status")
+    can_login_no_password = models.BooleanField(default=False, help_text="Allow login without password (username/email only)")
     
     # Optional: If you want to login with email instead of username
     USERNAME_FIELD = 'email'
