@@ -23,6 +23,7 @@ This report chronicles the development session from initialization to Phase 1 co
 | **11** | **Git Merge** | 🔀 Version Control | • Fixed repo permissions<br>• Committed to `team_lead`<br>• Merged to `development`<br>• Pushed to GitHub. | *Git History* |
 | **12** | **Final Debugging** | 🐞 Fix | • **Fix 1:** Enabled Console Email Backend (was silent).<br>• **Fix 2:** Enforced `category__is_active=True` check to prevent orphan product access. | `config/settings/base.py`<br>`apps/catalog/views.py` |
 | **13** | **Documentation** | 📝 Docs | Rewrote README and Architecture docs into standardized tables. | `README.md`<br>`PHASE_1_ARCHITECTURE.md` |
+| **14** | **Cart Implementation** | 🛒 Feature | • Created `cart` app (Task 2.2)<br>• Implemented `Cart` & `CartItem` models<br>• Added Add/Update/Remove logic<br>• Integrated Navbar Badge<br>• strict scope: No Checkout. | `apps/cart/`<br>`templates/cart/`<br>`templates/base.html` |
 
 ---
 
@@ -33,5 +34,8 @@ This report chronicles the development session from initialization to Phase 1 co
 | **Architecture** | 🟢 Stable | Modular Monolith (Apps isolated in `backend/apps/`) |
 | **Catalog** | 🟢 Complete | Categories, Products, Variants implemented & browsable. |
 | **Lead Gen** | 🟢 Complete | Inquiry Forms working with Email Notifs to Console. |
+| **User Auth** | 🟢 Complete | Registration, Login, Profile (Task 2.1). |
+| **Shopping Cart** | 🟢 Complete | Session-based persistence, Manage Items, Navbar Badge (Task 2.2). |
+| **Checkout** | 🔴 Pending | Disabled by design (Next Phase). |
 | **Security** | 🟢 Secure | CSRF enabled. Dead-links for inactive items handled. |
 | **DevOps** | 🟡 Local | Running on SQLite/Dev Server. Ready for Deployment. |

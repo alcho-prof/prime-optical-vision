@@ -30,6 +30,9 @@ urlpatterns = [
     # Catalog
     path('products/', include('apps.catalog.urls')),
 
+    # Cart
+    path('cart/', include('apps.cart.urls')),
+
 ]
 
 # Serve media files in development

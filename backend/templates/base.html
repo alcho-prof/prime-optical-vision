@@ -73,6 +73,16 @@
 
                 {% if user.is_authenticated %}
                 <span style="color: #999; margin-left: 10px;">Hi, {{ user.first_name|default:user.username }}</span>
+
+                <a href="{% url 'cart:detail' %}" style="font-weight: bold; position: relative;">
+                    Cart
+                    {% if cart_count > 0 %}
+                    <span
+                        style="background: #e53935; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.8rem; position: absolute; top: -10px; right: -15px;">{{
+                        cart_count }}</span>
+                    {% endif %}
+                </a>
+
                 <a href="{% url 'accounts:profile' %}">Profile</a>
                 {% if user.is_staff %}
                 <a href="/admin/">Admin</a>
