@@ -16,7 +16,7 @@
         <div class="product-gallery">
             <div class="main-image-container"
                 style="border: 1px solid #eee; height: 400px; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px;">
-                {% if variants %}
+                {% if variants and variants.first.image %}
                 <img id="mainImage" src="{{ variants.first.image.url }}" alt="{{ product.name }}"
                     style="max-width: 100%; max-height: 100%; object-fit: contain;">
                 {% else %}

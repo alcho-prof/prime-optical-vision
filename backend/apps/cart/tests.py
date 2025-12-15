@@ -6,6 +6,8 @@ from apps.catalog.models import Category, Product, ProductVariant
 
 User = get_user_model()
 
+from django.core.files.uploadedfile import SimpleUploadedFile
+
 class CartTests(TestCase):
     def setUp(self):
         # Create user
@@ -20,9 +22,14 @@ class CartTests(TestCase):
             description='Test Desc',
             price_range='100'
         )
+        
+        # Create dummy image
+        image = SimpleUploadedFile("test_image.jpg", b"file_content", content_type="image/jpeg")
+        
         self.variant = ProductVariant.objects.create(
             product=self.product,
-            color_name='Black'
+            color_name='Black',
+            image=image
         )
 
     def test_add_to_cart_creates_cart(self):
@@ -42,6 +49,16 @@ class CartTests(TestCase):
         self.assertEqual(cart.total_items, 2)
         item = CartItem.objects.get(cart=cart, product_variant=self.variant)
         self.assertEqual(item.quantity, 2)
+
+    def test_product_detail_page_has_add_to_cart_button(self):
+        url = reverse('catalog:product_detail', args=[self.product.slug])
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Add to Cart')
+        # Verify the form action points to the cart add URL
+        expected_action = reverse('cart:add', args=[self.variant.id])
+        self.assertContains(response, f'action="{expected_action}"')
 
     def test_remove_from_cart(self):
         # Add item first
