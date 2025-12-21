@@ -12,7 +12,7 @@ def register_view(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, f"Welcome, {user.first_name}!")
             return redirect('home')
         else:
@@ -35,3 +35,14 @@ def profile_view(request):
         form = UserProfileForm(instance=user)
         
     return render(request, 'accounts/profile.html', {'form': form})
+
+
+
+from django.contrib.auth.views import LoginView
+from .forms import EmailAuthenticationForm
+
+class AccountLoginView(LoginView):
+    template_name = "registration/login.html"
+    authentication_form = EmailAuthenticationForm
+    redirect_authenticated_user = True
+

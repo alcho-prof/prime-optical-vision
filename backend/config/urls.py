@@ -23,6 +23,7 @@ urlpatterns = [
     
     # User Authentication (login, register, profile)
     path('accounts/', include('apps.accounts.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     
     # Home Page
     path('', TemplateView.as_view(template_name='pages/home.html'), name='home'),

@@ -27,3 +27,6 @@ local_settings.py
 # Supabase (if we keep it)
 supabase/.branches
 supabase/.temp
+
+# ignore GitHub metadata folder
+.github/

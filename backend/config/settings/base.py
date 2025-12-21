@@ -137,6 +137,15 @@ USE_I18N = True
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
 
+AUTHENTICATION_BACKENDS = [
+    "apps.accounts.backends.PasswordlessAuthBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
+LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "login"
+
 
 
 # Static files (CSS, JavaScript, Images)
