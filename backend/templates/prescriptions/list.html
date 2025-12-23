@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="padding: 40px 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>My Prescriptions</h2>
+        <a href="{% url 'prescriptions:add' %}" class="btn-primary" style="text-decoration: none;">+ Add New</a>
+    </div>
+
+    {% if prescriptions %}
+    <div style="display: grid; gap: 20px;">
+        {% for rx in prescriptions %}
+        <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; background: #fff;">
+            <div
+                style="display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                <div>
+                    <strong style="font-size: 1.2rem;">{{ rx.name }}</strong>
+                    <br><span style="color: #666; font-size: 0.9rem;">Dr. {{ rx.doctor_name|default:"Unknown" }} - {{
+                        rx.exam_date|default:"No Date" }}</span>
+                </div>
+                <div>
+                    <a href="{% url 'prescriptions:edit' rx.id %}"
+                        style="color: #007bff; text-decoration: none; margin-right: 15px;">Edit</a>
+                    <a href="{% url 'prescriptions:delete' rx.id %}"
+                        style="color: #c62828; text-decoration: none;">Delete</a>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <!-- Right Eye -->
+                <div>
+                    <strong>Right Eye (OD)</strong>
+                    <div style="font-size: 0.9rem; margin-top: 5px;">
+                        Loop: <span style="background: #eee; padding: 2px 5px; border-radius: 3px;">SPH: {{ rx.od_sphere
+                            }}</span>
+                        {% if rx.od_cylinder %} <span
+                            style="background: #eee; padding: 2px 5px; border-radius: 3px;">CYL: {{ rx.od_cylinder
+                            }}</span> {% endif %}
+                        {% if rx.od_axis %} <span style="background: #eee; padding: 2px 5px; border-radius: 3px;">Axis:
+                            {{ rx.od_axis }}</span> {% endif %}
+                        {% if rx.od_add %} <span style="background: #dcedc8; padding: 2px 5px; border-radius: 3px;">Add:
+                            {{ rx.od_add }}</span> {% endif %}
+                    </div>
+                </div>
+
+                <!-- Left Eye -->
+                <div>
+                    <strong>Left Eye (OS)</strong>
+                    <div style="font-size: 0.9rem; margin-top: 5px;">
+                        <span style="background: #eee; padding: 2px 5px; border-radius: 3px;">SPH: {{ rx.os_sphere
+                            }}</span>
+                        {% if rx.os_cylinder %} <span
+                            style="background: #eee; padding: 2px 5px; border-radius: 3px;">CYL: {{ rx.os_cylinder
+                            }}</span> {% endif %}
+                        {% if rx.os_axis %} <span style="background: #eee; padding: 2px 5px; border-radius: 3px;">Axis:
+                            {{ rx.os_axis }}</span> {% endif %}
+                        {% if rx.os_add %} <span style="background: #dcedc8; padding: 2px 5px; border-radius: 3px;">Add:
+                            {{ rx.os_add }}</span> {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="text-align: center; color: #666; margin-top: 40px;">No prescriptions saved yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

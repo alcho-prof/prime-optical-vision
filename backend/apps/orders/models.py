@@ -41,6 +41,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     product_variant = models.ForeignKey(ProductVariant, related_name='order_items', on_delete=models.CASCADE)
     lens_type = models.ForeignKey(LensType, related_name='order_items', on_delete=models.SET_NULL, null=True, blank=True)
+    prescription = models.ForeignKey('prescriptions.Prescription', related_name='order_items', on_delete=models.SET_NULL, null=True, blank=True)
     
     quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=10, decimal_places=2, help_text="Unit price at time of purchase")

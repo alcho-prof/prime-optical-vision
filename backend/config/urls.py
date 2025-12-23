@@ -35,6 +35,9 @@ urlpatterns = [
 
     # Orders
     path('orders/', include('apps.orders.urls')),
+    
+    # Prescriptions
+    path('prescriptions/', include('apps.prescriptions.urls')),
 ]
 
 # Serve media files in development

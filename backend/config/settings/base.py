@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'apps.content',
     'apps.inquiries',
     'apps.accounts',
+    'apps.prescriptions',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="padding: 40px 20px; max-width: 800px;">
+    <h2>{{ title }}</h2>
+
+    <form method="post" style="margin-top: 30px;">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div class="alert alert-error">Please correct the errors below.</div>
+        {% endif %}
+
+        <!-- General Info -->
+        <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0;">General Info</h3>
+            <div style="margin-bottom: 15px;">
+                <label>Prescription Name</label>
+                {{ form.name }}
+                {{ form.name.errors }}
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <label>Doctor's Name</label>
+                    {{ form.doctor_name }}
+                    {{ form.doctor_name.errors }}
+                </div>
+                <div>
+                    <label>Exam Date</label>
+                    {{ form.exam_date }}
+                    {{ form.exam_date.errors }}
+                </div>
+            </div>
+        </div>
+
+        <!-- OD (Right Eye) -->
+        <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #0277bd;">Right Eye (OD)</h3>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                <div>
+                    <label>Sphere</label>
+                    {{ form.od_sphere }}
+                    {{ form.od_sphere.errors }}
+                </div>
+                <div>
+                    <label>Cylinder</label>
+                    {{ form.od_cylinder }}
+                </div>
+                <div>
+                    <label>Axis</label>
+                    {{ form.od_axis }}
+                    {{ form.od_axis.errors }}
+                </div>
+                <div>
+                    <label>Add</label>
+                    {{ form.od_add }}
+                </div>
+            </div>
+        </div>
+
+        <!-- OS (Left Eye) -->
+        <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #2e7d32;">Left Eye (OS)</h3>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                <div>
+                    <label>Sphere</label>
+                    {{ form.os_sphere }}
+                    {{ form.os_sphere.errors }}
+                </div>
+                <div>
+                    <label>Cylinder</label>
+                    {{ form.os_cylinder }}
+                </div>
+                <div>
+                    <label>Axis</label>
+                    {{ form.os_axis }}
+                    {{ form.os_axis.errors }}
+                </div>
+                <div>
+                    <label>Add</label>
+                    {{ form.os_add }}
+                </div>
+            </div>
+        </div>
+
+        <!-- PD -->
+        <div style="background: #fff3e0; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #ef6c00;">Pupillary Distance (PD)</h3>
+            <p style="font-size: 0.9rem; color: #666;">Enter either Single PD OR Dual PD.</p>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <div>
+                    <label>Single PD</label>
+                    {{ form.pd_single }}
+                </div>
+                <div>
+                    <label>Right PD</label>
+                    {{ form.pd_right }}
+                </div>
+                <div>
+                    <label>Left PD</label>
+                    {{ form.pd_left }}
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+            <button type="submit" class="btn-primary" style="padding: 10px 20px; font-size: 1rem;">Save
+                Prescription</button>
+            <a href="{% url 'prescriptions:list' %}"
+                style="display: inline-block; padding: 10px 20px; text-decoration: none; color: #555; border: 1px solid #ccc; border-radius: 4px;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
