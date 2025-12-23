@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Product
+from apps.lenses.models import LensType
 from apps.inquiries.forms import InquiryForm
 
 def product_list(request):
@@ -15,6 +17,23 @@ def product_list(request):
         'products': products,
     }
     return render(request, 'catalog/product_list.html', context)
+
+def search_results(request):
+    query = request.GET.get('q')
+    products = []
+    
+    if query:
+        products = Product.objects.filter(
+            Q(name__icontains=query) | 
+            Q(category__name__icontains=query),
+            is_active=True
+        ).select_related('category')
+    
+    context = {
+        'products': products,
+        'query': query,
+    }
+    return render(request, 'catalog/search_results.html', context)
 
 def product_detail(request, slug):
     """
@@ -61,9 +80,12 @@ def product_detail(request, slug):
     else:
         form = InquiryForm()
     
+    lenses = LensType.objects.filter(is_active=True)
+    
     context = {
         'product': product,
         'variants': variants,
         'form': form,
+        'lenses': lenses,
     }
     return render(request, 'catalog/product_detail.html', context)

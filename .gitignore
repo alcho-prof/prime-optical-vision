@@ -27,3 +27,4 @@ local_settings.py
 # Supabase (if we keep it)
 supabase/.branches
 supabase/.temp
+

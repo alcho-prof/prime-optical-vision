@@ -1,29 +1,28 @@
-from django.test import TestCase, Client
+from decimal import Decimal
+from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from .models import Cart, CartItem
+from django.conf import settings
 from apps.catalog.models import Category, Product, ProductVariant
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 User = get_user_model()
 
-from django.core.files.uploadedfile import SimpleUploadedFile
-
-class CartTests(TestCase):
+class CartSessionTests(TestCase):
     def setUp(self):
-        # Create user
+        # Create user (optional for session cart, but good to have)
         self.user = User.objects.create_user(username='testuser', password='password123', email='test@test.com')
-        self.client.force_login(self.user)
         
-        # Create product
+        # Create product with Price
         self.category = Category.objects.create(name='Glasses')
         self.product = Product.objects.create(
             name='Test Product',
             category=self.category,
             description='Test Desc',
-            price_range='100'
+            price_range='100',
+            price=Decimal('500.00')  # Real price
         )
         
-        # Create dummy image
         image = SimpleUploadedFile("test_image.jpg", b"file_content", content_type="image/jpeg")
         
         self.variant = ProductVariant.objects.create(
@@ -31,61 +30,64 @@ class CartTests(TestCase):
             color_name='Black',
             image=image
         )
+        self.variant_id = str(self.variant.id)
 
-    def test_add_to_cart_creates_cart(self):
+    def test_add_to_cart_guest(self):
+        """Test adding item as anonymous user updates session"""
         url = reverse('cart:add', args=[self.variant.id])
-        self.client.post(url)
+        response = self.client.post(url, {'quantity': 2})
         
-        self.assertTrue(Cart.objects.filter(user=self.user).exists())
-        cart = Cart.objects.get(user=self.user)
-        self.assertEqual(cart.total_items, 1)
+        self.assertEqual(response.status_code, 302)
+        session = self.client.session
+        self.assertIn(settings.CART_SESSION_ID, session)
+        cart = session[settings.CART_SESSION_ID]
+        self.assertIn(self.variant_id, cart)
+        self.assertEqual(cart[self.variant_id]['quantity'], 2)
+        self.assertEqual(cart[self.variant_id]['price'], '500.00')
 
     def test_add_same_item_increases_quantity(self):
         url = reverse('cart:add', args=[self.variant.id])
-        self.client.post(url)
-        self.client.post(url)
+        self.client.post(url, {'quantity': 1})
+        self.client.post(url, {'quantity': 2})
         
-        cart = Cart.objects.get(user=self.user)
-        self.assertEqual(cart.total_items, 2)
-        item = CartItem.objects.get(cart=cart, product_variant=self.variant)
-        self.assertEqual(item.quantity, 2)
-
-    def test_product_detail_page_has_add_to_cart_button(self):
-        url = reverse('catalog:product_detail', args=[self.product.slug])
-        response = self.client.get(url)
-        
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Add to Cart')
-        # Verify the form action points to the cart add URL
-        expected_action = reverse('cart:add', args=[self.variant.id])
-        self.assertContains(response, f'action="{expected_action}"')
+        session = self.client.session
+        cart = session[settings.CART_SESSION_ID]
+        self.assertEqual(cart[self.variant_id]['quantity'], 3)
 
     def test_remove_from_cart(self):
-        # Add item first
-        cart = Cart.objects.create(user=self.user)
-        item = CartItem.objects.create(cart=cart, product_variant=self.variant, quantity=1)
+        # Manually set session
+        session = self.client.session
+        session[settings.CART_SESSION_ID] = {
+            self.variant_id: {'quantity': 1, 'price': '500.00'}
+        }
+        session.save()
         
-        url = reverse('cart:remove', args=[item.id])
+        url = reverse('cart:remove', args=[self.variant.id])
         self.client.post(url)
         
-        self.assertEqual(CartItem.objects.count(), 0)
+        session = self.client.session
+        self.assertNotIn(self.variant_id, session[settings.CART_SESSION_ID])
 
     def test_update_quantity(self):
-        # Add item first
-        cart = Cart.objects.create(user=self.user)
-        item = CartItem.objects.create(cart=cart, product_variant=self.variant, quantity=1)
+        session = self.client.session
+        session[settings.CART_SESSION_ID] = {
+            self.variant_id: {'quantity': 1, 'price': '500.00'}
+        }
+        session.save()
         
-        url = reverse('cart:update', args=[item.id])
+        url = reverse('cart:update', args=[self.variant.id])
         self.client.post(url, {'quantity': 5})
         
-        item.refresh_from_db()
-        self.assertEqual(item.quantity, 5)
+        session = self.client.session
+        self.assertEqual(session[settings.CART_SESSION_ID][self.variant_id]['quantity'], 5)
 
-    def test_update_quantity_zero_removes_item(self):
-        cart = Cart.objects.create(user=self.user)
-        item = CartItem.objects.create(cart=cart, product_variant=self.variant, quantity=1)
+    def test_context_processor_exposes_cart(self):
+        """Test that templates receive the cart object"""
+        url = reverse('cart:add', args=[self.variant.id])
+        self.client.post(url, {'quantity': 1})
         
-        url = reverse('cart:update', args=[item.id])
-        self.client.post(url, {'quantity': 0})
-        
-        self.assertEqual(CartItem.objects.count(), 0)
+        response = self.client.get(reverse('cart:detail'))
+        self.assertIn('cart', response.context)
+        cart_obj = response.context['cart']
+        self.assertEqual(len(cart_obj), 1)
+        self.assertEqual(cart_obj.get_total_price(), Decimal('500.00'))

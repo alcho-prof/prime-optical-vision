@@ -33,6 +33,8 @@ urlpatterns = [
     # Cart
     path('cart/', include('apps.cart.urls')),
 
+    # Orders
+    path('orders/', include('apps.orders.urls')),
 ]
 
 # Serve media files in development

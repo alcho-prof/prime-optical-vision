@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="padding: 60px 20px; text-align: center;">
+    <div
+        style="background: #e8f5e9; color: #2e7d32; display: inline-block; padding: 20px; border-radius: 50%; margin-bottom: 20px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+    </div>
+
+    <h1 style="margin-bottom: 20px;">Thank You for Your Order!</h1>
+    <p style="font-size: 1.2rem; margin-bottom: 10px;">Your order has been placed successfully.</p>
+    <p style="font-size: 1.1rem; color: #555;">Order ID: <strong>#{{ order_id }}</strong></p>
+
+    <div style="margin-top: 40px;">
+        <p>We will contact you shortly to confirm your order.</p>
+        <a href="{% url 'home' %}" class="btn-primary"
+            style="margin-top: 20px; display: inline-block; padding: 10px 20px;">Return to Home</a>
+    </div>
+</div>
+{% endblock %}

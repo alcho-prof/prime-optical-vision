@@ -158,3 +158,4 @@ LOGOUT_REDIRECT_URL = 'home'
 # Email Configuration (Phase 1: Console Backend)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'admin@primeoptical.com'
+CART_SESSION_ID = 'cart'

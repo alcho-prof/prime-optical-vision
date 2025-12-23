@@ -10,7 +10,7 @@
     {% endfor %}
     {% endif %}
 
-    {% if cart and cart.items.all %}
+    {% if cart %}
     <div class="cart-items" style="margin-top: 30px;">
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
@@ -18,21 +18,26 @@
                     <th style="padding: 10px;">Product</th>
                     <th style="padding: 10px;">Variant</th>
                     <th style="padding: 10px;">Quantity</th>
-                    <th style="padding: 10px;">Price</th>
+                    <th style="padding: 10px;">Unit Price</th>
+                    <th style="padding: 10px;">Total</th>
                     <th style="padding: 10px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {% for item in cart.items.all %}
+                {% for item in cart %}
                 <tr style="border-bottom: 1px solid #eee;">
                     <td style="padding: 15px 10px;">
                         <strong>{{ item.product_variant.product.name }}</strong>
+                        {% if item.lens %}
+                        <br>
+                        <small style="color: #666; font-size: 0.9em;">+ {{ item.lens.name }}</small>
+                        {% endif %}
                     </td>
                     <td style="padding: 15px 10px;">
                         {{ item.product_variant.color_name }}
                     </td>
                     <td style="padding: 15px 10px;">
-                        <form action="{% url 'cart:update' item.id %}" method="post"
+                        <form action="{% url 'cart:update' item.cart_id %}" method="post"
                             style="display: flex; gap: 5px; align-items: center;">
                             {% csrf_token %}
                             <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
@@ -42,10 +47,13 @@
                         </form>
                     </td>
                     <td style="padding: 15px 10px;">
-                        {{ item.product_variant.product.price_range }} (Display Only)
+                        ₹{{ item.price }}
                     </td>
                     <td style="padding: 15px 10px;">
-                        <form action="{% url 'cart:remove' item.id %}" method="post">
+                        ₹{{ item.total_price }}
+                    </td>
+                    <td style="padding: 15px 10px;">
+                        <form action="{% url 'cart:remove' item.cart_id %}" method="post">
                             {% csrf_token %}
                             <button type="submit"
                                 style="color: red; border: none; background: none; cursor: pointer; text-decoration: underline;">Remove</button>
@@ -57,8 +65,11 @@
         </table>
 
         <div style="margin-top: 30px; text-align: right; font-size: 1.2rem;">
-            <strong>Total Items: {{ cart.total_items }}</strong>
-            <p style="color: #666; font-size: 0.9rem;">(Checkout is disabled for this phase)</p>
+            <strong>Total Price: ₹{{ cart.get_total_price }}</strong>
+            <br>
+            <a href="{% url 'orders:checkout' %}" class="btn-primary"
+                style="margin-top: 10px; display: inline-block; background-color: #28a745; text-decoration: none; color: white; padding: 10px 20px; border-radius: 4px;">Proceed
+                to Checkout</a>
         </div>
     </div>
     {% else %}

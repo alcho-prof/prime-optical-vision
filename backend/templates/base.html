@@ -59,6 +59,36 @@
             border: none;
             cursor: pointer;
         }
+
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffcc80;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            color: #0277bd;
+            border: 1px solid #81d4fa;
+        }
     </style>
 </head>
 
@@ -71,15 +101,22 @@
             <nav>
                 <a href="{% url 'catalog:product_list' %}">Eyewear</a>
 
+                <form action="{% url 'catalog:search_results' %}" method="get"
+                    style="display: inline-block; margin-left: 20px;">
+                    <input type="text" name="q" placeholder="Search..."
+                        style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px;">
+                </form>
+
                 {% if user.is_authenticated %}
                 <span style="color: #999; margin-left: 10px;">Hi, {{ user.first_name|default:user.username }}</span>
 
                 <a href="{% url 'cart:detail' %}" style="font-weight: bold; position: relative;">
                     Cart
-                    {% if cart_count > 0 %}
+                    {% if cart and cart|length > 0 %}
                     <span
-                        style="background: #e53935; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.8rem; position: absolute; top: -10px; right: -15px;">{{
-                        cart_count }}</span>
+                        style="background: #e53935; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.8rem; position: absolute; top: -10px; right: -15px;">
+                        {{ cart|length }}
+                    </span>
                     {% endif %}
                 </a>
 
@@ -102,6 +139,15 @@
     </header>
 
     <main>
+        {% if messages %}
+        <div class="container" style="padding-bottom: 0;">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
 

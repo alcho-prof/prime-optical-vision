@@ -40,6 +40,7 @@ class Product(TimeStampedModel):
         max_length=100, 
         help_text="e.g. '₹2000 - ₹5000' or 'Starting at ₹2000'"
     )
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 

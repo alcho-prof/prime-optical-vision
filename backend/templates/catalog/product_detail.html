@@ -76,19 +76,26 @@
                         </div>
 
                         {% if variant.in_stock %}
-                        {% if user.is_authenticated %}
                         <form action="{% url 'cart:add' variant.id %}" method="post">
                             {% csrf_token %}
-                            <button type="submit" class="btn-primary" style="font-size: 0.85rem; padding: 5px 10px;">
+
+                            <div style="margin-bottom: 10px;">
+                                <label style="font-size: 0.85rem; display: block; margin-bottom: 3px;">Select
+                                    Lens:</label>
+                                <select name="lens_id"
+                                    style="width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                                    <option value="" selected>Frame Only (No Lens)</option>
+                                    {% for lens in lenses %}
+                                    <option value="{{ lens.id }}">{{ lens.name }} (+₹{{ lens.price }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn-primary"
+                                style="font-size: 0.85rem; padding: 5px 10px; width: 100%;">
                                 Add to Cart
                             </button>
                         </form>
-                        {% else %}
-                        <a href="{% url 'accounts:login' %}?next={{ request.path }}"
-                            style="font-size: 0.85rem; color: #007bff; text-decoration: underline;">
-                            Login to Buy
-                        </a>
-                        {% endif %}
                         {% endif %}
                     </li>
                     {% endfor %}
