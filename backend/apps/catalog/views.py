@@ -42,6 +42,7 @@ def product_detail(request, slug):
     """
     # Security: Ensure both Product and its Category are active
     product = get_object_or_404(Product, slug=slug, is_active=True, category__is_active=True)
+    # Get all variants for this product
     variants = product.variants.all()
     
     if request.method == 'POST':
@@ -82,10 +83,15 @@ def product_detail(request, slug):
     
     lenses = LensType.objects.filter(is_active=True)
     
+    user_prescriptions = None
+    if request.user.is_authenticated:
+        user_prescriptions = request.user.prescriptions.all()
+    
     context = {
         'product': product,
         'variants': variants,
         'form': form,
         'lenses': lenses,
+        'user_prescriptions': user_prescriptions,
     }
     return render(request, 'catalog/product_detail.html', context)

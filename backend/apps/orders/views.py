@@ -25,6 +25,7 @@ def checkout_view(request):
                     order=order,
                     product_variant=item['product_variant'],
                     lens_type=item['lens'],
+                    prescription=item['prescription'],
                     price=item['price'], # Unit price (Frame + Lens)
                     quantity=item['quantity']
                 )
@@ -32,7 +33,7 @@ def checkout_view(request):
             # Clear the cart
             cart.clear()
             
-            # Redirect to success
+            # Redirect to success (Bypassing Payment for now as per user request)
             messages.success(request, f"Order #{order.id} placed successfully!")
             return redirect('orders:success', order_id=order.id)
             

@@ -1,39 +1,57 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | Prime Optical{% endblock %}
+{% block meta_description %}{{ product.description|striptags|truncatewords:25 }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/product-detail.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 1000px; margin: 40px auto; padding: 20px;">
+<div class="product-detail-container">
 
     <!-- Breadcrumb -->
-    <nav style="margin-bottom: 20px; color: #666;">
+    <nav class="breadcrumb">
         <a href="{% url 'home' %}">Home</a> &gt;
         <a href="{% url 'catalog:product_list' %}">Products</a> &gt;
         <span>{{ product.name }}</span>
     </nav>
 
-    <div class="product-detail-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+    <div class="product-detail-layout">
 
         <!-- Left Column: Gallery -->
         <div class="product-gallery">
-            <div class="main-image-container"
-                style="border: 1px solid #eee; height: 400px; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px;">
+            <div class="main-image-container">
                 {% if variants and variants.first.image %}
-                <img id="mainImage" src="{{ variants.first.image.url }}" alt="{{ product.name }}"
-                    style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                <img id="mainImage" src="{{ variants.first.image.url }}" alt="{{ product.name }}">
                 {% else %}
                 <span style="color: #999;">No Image Available</span>
                 {% endif %}
             </div>
 
+            <!-- Try-On Button -->
+            {% if variants and variants.first.image %}
+            <div style="margin-top: 15px; text-align: center;">
+                <button id="tryOnBtn" class="btn-secondary"
+                    style="background: #333; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 12c0 0 9-13 20-2" />
+                        <circle cx="7" cy="12" r="3" />
+                        <circle cx="17" cy="12" r="3" />
+                    </svg>
+                    Virtual Try-On
+                </button>
+            </div>
+            {% endif %}
+
             {% if variants %}
-            <div class="thumbnail-grid"
-                style="display: flex; gap: 10px; margin-top: 20px; overflow-x: auto; padding-bottom: 5px;">
+            <div class="thumbnail-grid">
                 {% for variant in variants %}
-                <div
-                    style="width: 80px; height: 80px; border: 1px solid #ddd; cursor: pointer; border-radius: 4px; overflow: hidden;">
+                <div class="thumbnail-item" {% if variant.image %}onclick="updateMainImage('{{ variant.image.url }}')"
+                    {% endif %}>
                     {% if variant.image %}
-                    <!-- Note: JS would be needed to enable click-to-swap, but for Phase 1 MVP we just list them -->
-                    <img src="{{ variant.image.url }}" alt="{{ variant.color_name }}"
-                        style="width: 100%; height: 100%; object-fit: cover;" title="{{ variant.color_name }}">
+                    <img src="{{ variant.image.url }}" alt="{{ variant.color_name }}" title="{{ variant.color_name }}">
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -43,82 +61,109 @@
 
         <!-- Right Column: Details -->
         <div class="product-info">
-            <span class="category-tag"
-                style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; color: #555;">
+            <span class="category-tag">
                 {{ product.category.name }}
             </span>
 
-            <h1 style="margin: 15px 0; font-size: 2.5rem;">{{ product.name }}</h1>
+            <h1 class="product-title">{{ product.name }}</h1>
 
-            <div class="price" style="font-size: 1.5rem; color: #d32f2f; font-weight: bold; margin-bottom: 20px;">
+            <div class="product-price">
                 {{ product.price_range }}
             </div>
 
-            <div class="description" style="line-height: 1.6; color: #444; margin-bottom: 30px;">
+            <div class="product-description">
                 {{ product.description|linebreaks }}
             </div>
 
-            <div class="variants-list" style="margin-bottom: 30px;">
-                <h3>Available Colors:</h3>
-                <ul style="list-style: none; padding: 0;">
+            {% if variants %}
+            <div class="variants-selection">
+                <h3>Select Color:</h3>
+
+                <div class="variant-options">
                     {% for variant in variants %}
-                    <li
-                        style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span
-                                style="width: 20px; height: 20px; background: #eee; border-radius: 50%; border: 1px solid #ccc;"></span>
-                            <strong>{{ variant.color_name }}</strong>
-                            {% if variant.in_stock %}
-                            <span style="color: green; font-size: 0.9rem;">(In Stock)</span>
-                            {% else %}
-                            <span style="color: red; font-size: 0.9rem;">(Out of Stock)</span>
-                            {% endif %}
-                        </div>
-
-                        {% if variant.in_stock %}
-                        <form action="{% url 'cart:add' variant.id %}" method="post">
-                            {% csrf_token %}
-
-                            <div style="margin-bottom: 10px;">
-                                <label style="font-size: 0.85rem; display: block; margin-bottom: 3px;">Select
-                                    Lens:</label>
-                                <select name="lens_id"
-                                    style="width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                                    <option value="" selected>Frame Only (No Lens)</option>
-                                    {% for lens in lenses %}
-                                    <option value="{{ lens.id }}">{{ lens.name }} (+₹{{ lens.price }})</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <button type="submit" class="btn-primary"
-                                style="font-size: 0.85rem; padding: 5px 10px; width: 100%;">
-                                Add to Cart
-                            </button>
-                        </form>
+                    <div class="variant-option {% if forloop.first %}variant-selected{% endif %}"
+                        onclick="selectVariant('{{ variant.id }}', '{{ variant.color_name }}', '{% if variant.image %}{{ variant.image.url }}{% endif %}', this)">
+                        {% if variant.image %}
+                        <img src="{{ variant.image.url }}">
+                        {% else %}
+                        <div
+                            style="width: 100%; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 4px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem;">
+                            No Image</div>
                         {% endif %}
-                    </li>
+                        <div class="variant-option-name">{{ variant.color_name }}</div>
+                    </div>
                     {% endfor %}
-                </ul>
+                </div>
             </div>
+            {% endif %}
+
+            <!-- Main Add to Cart Form -->
+            {% if variants %}
+            <div class="add-to-cart-section">
+                <form id="addToCartForm" action="{% url 'cart:add' variants.first.id %}" method="post">
+                    {% csrf_token %}
+
+                    <div class="selected-variant-info">
+                        Selected: <span id="selectedColorName">{{ variants.first.color_name }}</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select Lens Package:</label>
+                        <select name="lens_id">
+                            <option value="" selected>Frame Only (No Lens)</option>
+                            {% for lens in lenses %}
+                            <option value="{{ lens.id }}">{{ lens.name }} (+₹{{ lens.price }}) - {{
+                                lens.description|truncatewords:5 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {% if user.is_authenticated %}
+                    <div class="form-group">
+                        <label>Attach Prescription:</label>
+                        <select name="prescription_id">
+                            <option value="" selected>None / Provide Later</option>
+                            {% for rx in user_prescriptions %}
+                            <option value="{{ rx.id }}">{{ rx.name }} ({{ rx.doctor_name|default:"Self" }})</option>
+                            {% endfor %}
+                        </select>
+                        <a href="{% url 'prescriptions:add' %}" target="_blank" class="prescription-link">+ Add New
+                            Prescription</a>
+                    </div>
+                    {% else %}
+                    <div class="login-prompt">
+                        <a href="{% url 'accounts:login' %}?next={{ request.path }}">Login</a> to attach your
+                        prescription.
+                    </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn-primary"
+                        style="width: 100%; padding: 15px; font-size: 1.1rem; font-weight: bold;">
+                        Add to Cart
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <div class="add-to-cart-section" style="background: #fff3cd; border-color: #ffeeba;">
+                <p style="margin: 0; color: #856404;">⚠️ This product currently has no variants available. Please
+                    contact us to inquire about availability.</p>
+            </div>
+            {% endif %}
 
             <!-- Lens Info Static Block -->
-            <div class="lens-info"
-                style="background: #f9fbfd; padding: 15px; border-radius: 6px; border: 1px solid #e1e8ed; margin-bottom: 30px;">
-                <h4 style="margin-top: 0; color: #0056b3;">Lens Compatibility</h4>
-                <p style="font-size: 0.9rem; margin-bottom: 0;">
+            <div class="lens-info">
+                <h4>Lens Compatibility</h4>
+                <p>
                     This frame supports Single Vision, Bifocal, and Progressive lenses.
                     Includes generic Anti-glare coating options.
                     <br><em>*Final lens selection is done in-store based on your prescription.</em>
                 </p>
             </div>
 
-
             <!-- Inquiry CTA -->
-            <div id="inquiry-section" class="actions" style="border-top: 2px solid #eee; padding-top: 20px;">
+            <div id="inquiry-section" class="inquiry-section">
                 {% if success %}
-                <div
-                    style="background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 4px; text-align: center; border: 1px solid #a5d6a7;">
+                <div class="inquiry-success">
                     <h3>Thank You!</h3>
                     <p>We have received your inquiry for <strong>{{ product.name }}</strong>.</p>
                     <p>Our team will contact you shortly at the provided number.</p>
@@ -128,39 +173,38 @@
                 </div>
                 {% else %}
                 <h3 style="margin-bottom: 15px;">Interested? Make an Inquiry</h3>
-                <form method="post" action="{% url 'catalog:product_detail' product.slug %}#inquiry-section">
+                <form method="post" action="{% url 'catalog:product_detail' product.slug %}#inquiry-section"
+                    class="inquiry-form">
                     {% csrf_token %}
 
                     {% if form.errors %}
-                    <div
-                        style="background: #ffebee; color: #c62828; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                    <div class="inquiry-error">
                         <p style="margin: 0;">Please correct the errors below.</p>
                     </div>
                     {% endif %}
 
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Your Name *</label>
+                    <div class="form-field">
+                        <label>Your Name *</label>
                         {{ form.customer_name }}
                         {{ form.customer_name.errors }}
                     </div>
 
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Phone Number *</label>
+                    <div class="form-field">
+                        <label>Phone Number *</label>
                         {{ form.phone_number }}
                         {{ form.phone_number.errors }}
                     </div>
 
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Message (Optional)</label>
+                    <div class="form-field">
+                        <label>Message (Optional)</label>
                         {{ form.message }}
                         {{ form.message.errors }}
                     </div>
 
-                    <button type="submit"
-                        style="width: 100%; background: #000; color: #fff; padding: 15px; font-size: 1.1rem; border: none; cursor: pointer; border-radius: 4px; transition: background 0.3s;">
+                    <button type="submit" class="inquiry-submit">
                         Send Inquiry
                     </button>
-                    <p style="font-size: 0.85rem; color: #777; margin-top: 10px; text-align: center;">
+                    <p class="inquiry-note">
                         * No payment required. We will call you to confirm details.
                     </p>
                 </form>
@@ -170,4 +214,30 @@
         </div>
     </div>
 </div>
+
+<!-- Virtual Try-On Modal -->
+<div id="tryOnModal" class="try-on-modal">
+    <div class="try-on-modal-content">
+        <span id="closeModal" class="try-on-close">&times;</span>
+        <h2 class="try-on-title">Virtual Try-On</h2>
+
+        <div class="webcam-container">
+            <video id="webcam" autoplay playsinline class="webcam-video"></video>
+            {% if variants and variants.first.image %}
+            <img id="overlayImage" src="{{ variants.first.image.url }}" class="frame-overlay">
+            {% else %}
+            <div style="position: absolute; color: white;">No Frame Image</div>
+            {% endif %}
+        </div>
+        <div class="try-on-controls">
+            <p>Align your face with the frames. Use the slider to adjust size.</p>
+            <input type="range" min="30" max="80" value="50"
+                oninput="document.getElementById('overlayImage').style.width = this.value + '%'; document.getElementById('overlayImage').style.left = (50 - this.value/2) + '%'">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/product-detail.js' %}"></script>
 {% endblock %}

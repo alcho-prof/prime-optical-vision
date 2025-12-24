@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 40px auto; padding: 20px;">
+    <h2>Book an Appointment</h2>
+    <p>Schedule a visit for an eye exam or fitting.</p>
+
+    <div style="background: #fff; padding: 30px; border: 1px solid #ddd; border-radius: 8px;">
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.errors %}
+            <div style="background: #ffebee; color: #c62828; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
+                <strong>Please fix the errors below:</strong>
+                {{ form.non_field_errors }}
+                <ul style="margin: 5px 0 0 20px;">
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Full Name</label>
+                {{ form.full_name }}
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Phone Number</label>
+                {{ form.phone_number }}
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Email</label>
+                {{ form.email }}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Date</label>
+                    {{ form.date }}
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Time</label>
+                    {{ form.time }}
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Purpose</label>
+                {{ form.purpose }}
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Notes (Optional)</label>
+                {{ form.notes }}
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%; padding: 15px; margin-top: 10px;">Confirm
+                Booking</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

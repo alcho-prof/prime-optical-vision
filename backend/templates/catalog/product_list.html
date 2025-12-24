@@ -1,50 +1,95 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eyewear Collection | Prime Optical{% endblock %}
+{% block meta_description %}Explore our premium collection of sunglasses, eyeglasses, and computer glasses.{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/product-list.css' %}">
+{% endblock %}
 
 {% block content %}
-<section class="container" style="padding: 40px 20px; max-width: 1200px; margin: 0 auto;">
-    <h1 style="text-align: center; margin-bottom: 40px;">Our Eyewear Collection</h1>
+<section class="product-list-container">
+    <h1 class="product-list-title">Our Eyewear Collection</h1>
 
     {% if products %}
-    <div class="product-grid"
-        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px;">
+    <div class="product-grid">
         {% for product in products %}
-        <article class="product-card"
-            style="border: 1px solid #eee; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-            <div class="product-image"
-                style="height: 200px; background: #f9f9f9; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; overflow: hidden;">
+        <article class="product-card">
+            <!-- Wishlist Icon -->
+            <div class="wishlist-icon" title="Add to Wishlist">
+                <span style="font-size: 1.2rem;">♡</span>
+            </div>
+
+            <!-- Product Image -->
+            <div class="product-image">
                 {% with cover_variant=product.variants.first %}
                 {% if cover_variant and cover_variant.image %}
-                <img src="{{ cover_variant.image.url }}" alt="{{ product.name }}"
-                    style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                <img src="{{ cover_variant.image.url }}" alt="{{ product.name }}">
                 {% else %}
-                <span style="color: #999;">No Image Available</span>
+                <span class="no-image">No Image Available</span>
                 {% endif %}
                 {% endwith %}
             </div>
 
-            <h2 style="font-size: 1.25rem; margin: 0 0 10px 0;">
-                <a href="{% url 'catalog:product_detail' product.slug %}" style="text-decoration: none; color: #333;">
-                    {{ product.name }}
+            <!-- Product Info -->
+            <div class="product-info">
+                <!-- Category -->
+                <div class="product-category">
+                    {{ product.category.name }}
+                </div>
+
+                <!-- Product Name -->
+                <h2>
+                    <a href="{% url 'catalog:product_detail' product.slug %}">
+                        {{ product.name }}
+                    </a>
+                </h2>
+
+                <!-- Color Swatches (if multiple variants exist) -->
+                {% if product.variants.count > 1 %}
+                <div class="color-swatches">
+                    {% for variant in product.variants.all|slice:":4" %}
+                    <div class="color-swatch"
+                        style="background: {% if variant.color_name == 'Black' %}#000{% elif variant.color_name == 'Gold' %}#FFD700{% elif variant.color_name == 'Silver' %}#C0C0C0{% elif variant.color_name == 'Brown' %}#8B4513{% else %}linear-gradient(135deg, #667eea 0%, #764ba2 100%){% endif %};"
+                        title="{{ variant.color_name }}">
+                    </div>
+                    {% endfor %}
+                    {% if product.variants.count > 4 %}
+                    <div class="color-swatch more-colors">
+                        +{{ product.variants.count|add:"-4" }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Rating (Placeholder - will be implemented later) -->
+                <div class="product-rating">
+                    <span class="rating-stars">★ 4.8</span>
+                    <span class="rating-count">(120)</span>
+                </div>
+
+                <!-- Pricing -->
+                <div class="product-pricing">
+                    <div class="product-price">
+                        {{ product.price_range }}
+                    </div>
+                    <!-- Uncomment when discount feature is implemented
+                    <div class="product-price-original">₹3,000</div>
+                    <div class="product-discount">33% OFF</div>
+                    -->
+                </div>
+
+                <!-- View Details Button -->
+                <a href="{% url 'catalog:product_detail' product.slug %}" class="btn-view-details">
+                    View Details
                 </a>
-            </h2>
-
-            <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">
-                {{ product.category.name }}
             </div>
-
-            <div style="font-weight: bold; color: #d32f2f; margin-bottom: 15px;">
-                {{ product.price_range }}
-            </div>
-
-            <a href="{% url 'catalog:product_detail' product.slug %}"
-                style="display: block; text-align: center; background: #333; color: #fff; padding: 10px; text-decoration: none; border-radius: 4px;">
-                View Details
-            </a>
         </article>
         {% endfor %}
     </div>
     {% else %}
-    <div style="text-align: center; color: #666; padding: 50px;">
+    <div class="no-products">
         <p>No products found in the catalog currently. Please check back later.</p>
     </div>
     {% endif %}

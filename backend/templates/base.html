@@ -1,22 +1,46 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prime Optical</title>
+    <title>{% block title %}Prime Optical{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Premium Eyewear and Optical Services{% endblock %}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
             line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
         }
 
+        /* Sticky Header - Glass Effect */
         header {
-            background: #fff;
-            border-bottom: 1px solid #eee;
-            padding: 15px 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
         }
 
         .nav-container {
@@ -26,23 +50,101 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 20px;
+            gap: 20px;
         }
 
         .logo {
             font-size: 1.5rem;
-            font-weight: bold;
+            font-weight: 700;
             text-decoration: none;
-            color: #000;
+            color: var(--primary-black);
+            letter-spacing: -0.3px;
+            text-transform: uppercase;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
         nav a {
-            margin-left: 20px;
             text-decoration: none;
-            color: #555;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         nav a:hover {
-            color: #000;
+            color: var(--gray-600);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-black);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Search Bar */
+        .search-form {
+            display: inline-flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .search-form input {
+            padding: 8px 40px 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .search-form input:focus {
+            outline: none;
+            border-color: var(--primary-black);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+            width: 300px;
+        }
+
+        .search-form input::placeholder {
+            color: var(--text-light);
+        }
+
+        /* Icon Links */
+        .icon-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .icon-badge {
+            background: var(--primary-black);
+            color: var(--primary-white);
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            min-width: 18px;
+            text-align: center;
         }
 
         .container {
@@ -51,43 +153,100 @@
             padding: 20px;
         }
 
+        /* Buttons - Professional Black & White */
         .btn-primary {
-            background: #000;
-            color: #fff;
-            padding: 8px 15px;
+            background: var(--primary-black);
+            color: var(--primary-white);
+            padding: 12px 24px;
             border-radius: 4px;
             border: none;
             cursor: pointer;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
+        .btn-primary:hover {
+            background: var(--gray-800);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-logout {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            color: var(--primary-black);
+        }
+
+        /* Alerts */
         .alert {
-            padding: 15px;
-            border-radius: 4px;
+            padding: 15px 20px;
+            border-radius: 8px;
             margin-bottom: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .alert-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #a5d6a7;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
         .alert-error {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ef9a9a;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
 
         .alert-warning {
-            background: #fff3e0;
-            color: #ef6c00;
-            border: 1px solid #ffcc80;
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
         }
 
         .alert-info {
-            background: #e3f2fd;
-            color: #0277bd;
-            border: 1px solid #81d4fa;
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* User Greeting */
+        .user-greeting {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Icon Links - Professional */
+        .nav-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .nav-icon:hover {
+            background: var(--glass-black);
         }
     </style>
 </head>
@@ -100,23 +259,26 @@
 
             <nav>
                 <a href="{% url 'catalog:product_list' %}">Eyewear</a>
+                <a href="{% url 'appointments:create' %}">Appointments</a>
 
-                <form action="{% url 'catalog:search_results' %}" method="get"
-                    style="display: inline-block; margin-left: 20px;">
-                    <input type="text" name="q" placeholder="Search..."
-                        style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px;">
+                <form action="{% url 'catalog:search_results' %}" method="get" class="search-form">
+                    <input type="text" name="q" placeholder="Search products...">
                 </form>
 
                 {% if user.is_authenticated %}
-                <span style="color: #999; margin-left: 10px;">Hi, {{ user.first_name|default:user.username }}</span>
+                <span class="user-greeting">{{ user.first_name|default:user.username }}</span>
 
-                <a href="{% url 'cart:detail' %}" style="font-weight: bold; position: relative;">
-                    Cart
+                <!-- Wishlist Link -->
+                <a href="#" class="icon-link nav-icon" title="Wishlist">
+                    <span>Wishlist</span>
+                    <span class="icon-badge" style="display: none;">0</span>
+                </a>
+
+                <!-- Cart Link -->
+                <a href="{% url 'cart:detail' %}" class="icon-link nav-icon" title="Cart">
+                    <span>Cart</span>
                     {% if cart and cart|length > 0 %}
-                    <span
-                        style="background: #e53935; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.8rem; position: absolute; top: -10px; right: -15px;">
-                        {{ cart|length }}
-                    </span>
+                    <span class="icon-badge">{{ cart|length }}</span>
                     {% endif %}
                 </a>
 
@@ -126,13 +288,11 @@
                 {% endif %}
                 <form action="{% url 'accounts:logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit"
-                        style="background: none; border: none; cursor: pointer; color: #d32f2f; font-size: 1rem; margin-left: 15px; padding: 0;">Logout</button>
+                    <button type="submit" class="btn-logout">Logout</button>
                 </form>
                 {% else %}
                 <a href="{% url 'accounts:login' %}">Login</a>
-                <a href="{% url 'accounts:register' %}" class="btn-primary" style="color: #fff; margin-left: 15px;">Sign
-                    Up</a>
+                <a href="{% url 'accounts:register' %}'" class="btn-primary">Sign Up</a>
                 {% endif %}
             </nav>
         </div>
@@ -152,9 +312,11 @@
     </main>
 
     <footer style="text-align: center; padding: 40px; color: #888; border-top: 1px solid #eee; margin-top: 50px;">
-        &copy; 2025 Prime Optical Vision. Phase 2 (Development).
+        &copy; 2026 Prime Optical Vision. All Rights Reserved.
     </footer>
 
+    {% block extra_js %}{% endblock %}
 </body>
+
 
 </html>

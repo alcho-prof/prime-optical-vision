@@ -38,6 +38,12 @@ urlpatterns = [
     
     # Prescriptions
     path('prescriptions/', include('apps.prescriptions.urls')),
+    
+    # Billing
+    path('billing/', include('apps.billing.urls')),
+
+    # Appointments
+    path('appointments/', include('apps.appointments.urls')),
 ]
 
 # Serve media files in development

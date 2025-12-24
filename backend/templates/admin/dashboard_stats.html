@@ -1,0 +1,44 @@
+<div class="dashboard-stats" style="margin-bottom: 30px;">
+    <h2
+        style="margin-bottom: 15px; font-size: 1.2rem; color: #444; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+        Business Overview</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+        <!-- Sales Card -->
+        <div
+            style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #2e7d32;">
+            <h3 style="margin: 0; font-size: 0.9rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                Total Revenue</h3>
+            <p style="margin: 10px 0 0; font-size: 1.8rem; font-weight: bold; color: #333;">₹{{ total_sales }}</p>
+        </div>
+
+        <!-- Orders Card -->
+        <div
+            style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #1565c0;">
+            <h3 style="margin: 0; font-size: 0.9rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                Total Orders</h3>
+            <p style="margin: 10px 0 0; font-size: 1.8rem; font-weight: bold; color: #333;">{{ total_orders }}</p>
+            <small style="color: #f57f17; font-weight: bold;">{{ pending_orders }} Pending</small>
+        </div>
+
+        <!-- Appointments Card -->
+        <div
+            style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #7b1fa2;">
+            <h3 style="margin: 0; font-size: 0.9rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                Appointments (Today)</h3>
+            <p style="margin: 10px 0 0; font-size: 1.8rem; font-weight: bold; color: #333;">{{ today_appointments }}</p>
+            <small style="color: #f57f17; font-weight: bold;">{{ pending_appointments }} Pending Approval</small>
+        </div>
+
+        <!-- Products/Users Card -->
+        <div
+            style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #ef6c00;">
+            <h3 style="margin: 0; font-size: 0.9rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">
+                Overview</h3>
+            <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 5px;">
+                <span style="font-size: 0.95rem;"><strong>{{ active_products }}</strong> Active Products</span>
+                <span style="font-size: 0.95rem;"><strong>{{ total_customers }}</strong> Registered Users</span>
+            </div>
+        </div>
+    </div>
+</div>

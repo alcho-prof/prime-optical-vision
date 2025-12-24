@@ -26,3 +26,5 @@
 | **Order Management** | View orders | `backend/apps/orders/` | `views.py` | Admin & User views | Permission errors | Add login_required |
 | **Order Admin** | Manage orders | `backend/apps/orders/` | `admin.py` | Admin configuration logic | Not showing in Admin | Register model in admin.py |
 | **Basic Search** | Find products | `backend/apps/catalog/` | `views.py` | Q queries | No results | Check case sensitivity |
+| **Prescriptions** | Rx Management | `backend/apps/prescriptions/` | `models.py` | OD/OS Logic | Data Validation | Check ranges |
+| **Task 3.1** | Prescriptions | `backend/apps/prescriptions/` | `models.py` | Rx Logic | - | - |

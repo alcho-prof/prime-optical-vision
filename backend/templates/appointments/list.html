@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 40px auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h2>My Appointments</h2>
+        <a href="{% url 'appointments:create' %}" class="btn-primary"
+            style="text-decoration: none; padding: 10px 20px;">+ Book New</a>
+    </div>
+
+    {% if appointments %}
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+        {% for appt in appointments %}
+        <div
+            style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; background: #fff; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div style="font-weight: bold; font-size: 1.1rem; margin-bottom: 5px;">
+                    {{ appt.get_purpose_display }}
+                </div>
+                <div style="color: #666;">
+                    📅 {{ appt.date|date:"F j, Y" }} at {{ appt.time|time:"g:i A" }}
+                </div>
+                {% if appt.notes %}
+                <div style="margin-top: 5px; font-size: 0.9rem; color: #888;">
+                    <em>"{{ appt.notes }}"</em>
+                </div>
+                {% endif %}
+            </div>
+
+            <div>
+                {% if appt.status == 'pending' %}
+                <span
+                    style="background: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem;">Pending</span>
+                {% elif appt.status == 'confirmed' %}
+                <span
+                    style="background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem;">Confirmed</span>
+                {% elif appt.status == 'cancelled' %}
+                <span
+                    style="background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem;">Cancelled</span>
+                {% else %}
+                <span
+                    style="background: #e2e3e5; color: #383d41; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem;">{{
+                    appt.get_status_display }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; color: #777; padding: 40px; background: #f9f9f9; border-radius: 8px;">
+        <p>You haven't booked any appointments yet.</p>
+        <a href="{% url 'appointments:create' %}" style="color: #0056b3;">Schedule your first visit</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

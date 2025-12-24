@@ -1,0 +1,194 @@
+/* Professional Black & White Glassmorphism Theme */
+:root {
+    /* Monochrome Color Palette */
+    --primary-black: #000000;
+    --primary-white: #FFFFFF;
+    --gray-50: #FAFAFA;
+    --gray-100: #F5F5F5;
+    --gray-200: #EEEEEE;
+    --gray-300: #E0E0E0;
+    --gray-400: #BDBDBD;
+    --gray-500: #9E9E9E;
+    --gray-600: #757575;
+    --gray-700: #616161;
+    --gray-800: #424242;
+    --gray-900: #212121;
+
+    /* Glass Effect Colors */
+    --glass-white: rgba(255, 255, 255, 0.1);
+    --glass-white-hover: rgba(255, 255, 255, 0.15);
+    --glass-black: rgba(0, 0, 0, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.18);
+
+    /* Semantic Colors */
+    --text-primary: #000000;
+    --text-secondary: #616161;
+    --text-tertiary: #9E9E9E;
+    --text-inverse: #FFFFFF;
+
+    /* Background Colors */
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #FAFAFA;
+    --bg-tertiary: #F5F5F5;
+    --bg-dark: #000000;
+
+    /* Border Colors */
+    --border-light: #EEEEEE;
+    --border-medium: #E0E0E0;
+    --border-dark: #BDBDBD;
+
+    /* Status Colors (Monochrome) */
+    --success: #000000;
+    --error: #424242;
+    --warning: #757575;
+    --info: #9E9E9E;
+
+    /* Shadows - Subtle and Professional */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.10);
+    --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.12);
+
+    /* Glass Shadows */
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+    --glass-shadow-hover: 0 12px 40px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* Global Transitions */
+* {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+a,
+button,
+input,
+select,
+.btn-primary,
+.btn-secondary {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Button Animations - Minimal and Professional */
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Card Hover Effects - Subtle Glass Morphism */
+.product-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--glass-shadow-hover);
+}
+
+/* Glass Morphism Effect */
+.glass {
+    background: var(--glass-white);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+}
+
+.glass-dark {
+    background: var(--glass-black);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-light);
+}
+
+/* Modal Animation */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-content {
+    animation: modalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile Responsiveness Improvements */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .nav-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .product-detail-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .product-gallery .main-image-container {
+        height: 300px;
+    }
+
+    /* Cart Table Mobile View */
+    .cart-table thead {
+        display: none;
+    }
+
+    .cart-table,
+    .cart-table tbody,
+    .cart-table tr,
+    .cart-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .cart-table tr {
+        margin-bottom: 15px;
+        border: 1px solid var(--border-light);
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .cart-table td {
+        text-align: right;
+        padding: 5px 0;
+        border: none;
+        position: relative;
+    }
+
+    .cart-table td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+    }
+}
