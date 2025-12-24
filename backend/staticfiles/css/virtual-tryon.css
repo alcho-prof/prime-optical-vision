@@ -1,0 +1,254 @@
+/* Virtual Try-On Page Styles - Professional Glassmorphism */
+
+.tryon-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.tryon-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+.tryon-subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+    font-size: 1.1rem;
+}
+
+.tryon-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 30px;
+}
+
+/* Camera Section */
+.camera-section {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 30px;
+    position: relative;
+}
+
+.camera-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--gray-900);
+}
+
+#webcam {
+    width: 100%;
+    height: auto;
+    display: block;
+    transform: scaleX(-1);
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: scaleX(-1);
+}
+
+.camera-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.control-btn {
+    padding: 12px 24px;
+    border: 2px solid var(--primary-black);
+    background: var(--primary-white);
+    color: var(--primary-black);
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.control-btn:hover {
+    background: var(--primary-black);
+    color: var(--primary-white);
+}
+
+.control-btn.active {
+    background: var(--primary-black);
+    color: var(--primary-white);
+}
+
+.control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Product Selection Sidebar */
+.product-sidebar {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 25px;
+    max-height: 800px;
+    overflow-y: auto;
+}
+
+.sidebar-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.variant-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.variant-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--primary-white);
+}
+
+.variant-item:hover {
+    border-color: var(--primary-black);
+    transform: translateX(5px);
+}
+
+.variant-item.active {
+    border-color: var(--primary-black);
+    background: var(--gray-50);
+}
+
+.variant-image {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: var(--gray-100);
+    padding: 5px;
+}
+
+.variant-info {
+    flex: 1;
+}
+
+.variant-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.variant-color {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Loading State */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    z-index: 10;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Instructions */
+.instructions {
+    background: var(--gray-100);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.instructions h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.instructions ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.instructions li {
+    margin-bottom: 8px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 968px) {
+    .tryon-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .product-sidebar {
+        max-height: 400px;
+    }
+
+    .tryon-title {
+        font-size: 2rem;
+    }
+}

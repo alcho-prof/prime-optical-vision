@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Virtual Try-On | Prime Optical{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/virtual-tryon.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="tryon-container">
+    <h1 class="tryon-title">Virtual Try-On</h1>
+    <p class="tryon-subtitle">See how frames look on you in real-time using AR technology</p>
+
+    <div class="tryon-layout">
+        <!-- Camera Section -->
+        <div class="camera-section">
+            <div class="instructions">
+                <h3>How to Use:</h3>
+                <ul>
+                    <li>Allow camera access when prompted</li>
+                    <li>Position your face in the center of the frame</li>
+                    <li>Select a frame from the sidebar to try it on</li>
+                    <li>Capture photos to save your favorite looks</li>
+                </ul>
+            </div>
+
+            <div class="camera-container">
+                <video id="webcam" autoplay playsinline></video>
+                <canvas id="canvas"></canvas>
+                <div id="loading" class="loading-overlay">
+                    <div class="loading-spinner"></div>
+                    <div>Loading AR Models...</div>
+                </div>
+            </div>
+
+            <div class="camera-controls">
+                <button id="startBtn" class="control-btn">Start Camera</button>
+                <button id="stopBtn" class="control-btn" disabled>Stop Camera</button>
+                <button id="captureBtn" class="control-btn" disabled>Capture Photo</button>
+                <button id="switchBtn" class="control-btn" disabled>Switch Camera</button>
+            </div>
+        </div>
+
+        <!-- Product Selection Sidebar -->
+        <div class="product-sidebar">
+            <h2 class="sidebar-title">Select Frames</h2>
+            <div class="variant-list">
+                {% for variant in variants %}
+                {% if variant.image %}
+                <div class="variant-item" data-variant-id="{{ variant.id }}" data-image-url="{{ variant.image.url }}">
+                    <img src="{{ variant.image.url }}" alt="{{ variant.product.name }}" class="variant-image">
+                    <div class="variant-info">
+                        <div class="variant-name">{{ variant.product.name }}</div>
+                        <div class="variant-color">{{ variant.color_name }}</div>
+                    </div>
+                </div>
+                {% endif %}
+                {% empty %}
+                <p style="color: var(--text-secondary); text-align: center;">No frames available for try-on</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Face Detection Library -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
+
+<!-- Virtual Try-On Application -->
+<script src="{% static 'js/virtual-tryon.js' %}"></script>
+<script>
+    // Initialize the application with session ID
+    initVirtualTryOn('{{ session_id }}');
+</script>
+{% endblock %}

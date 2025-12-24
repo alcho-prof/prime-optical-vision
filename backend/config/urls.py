@@ -44,6 +44,9 @@ urlpatterns = [
 
     # Appointments
     path('appointments/', include('apps.appointments.urls')),
+    
+    # Virtual Try-On
+    path('virtual-tryon/', include('apps.virtual_tryon.urls')),
 ]
 
 # Serve media files in development
