@@ -2,7 +2,8 @@
 {% load static %}
 
 {% block title %}Eyewear Collection | Prime Optical{% endblock %}
-{% block meta_description %}Explore our premium collection of sunglasses, eyeglasses, and computer glasses.{% endblock %}
+{% block meta_description %}Explore our premium collection of sunglasses, eyeglasses, and computer glasses.{% endblock
+%}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/product-list.css' %}">
@@ -18,7 +19,7 @@
         <article class="product-card">
             <!-- Wishlist Icon -->
             <div class="wishlist-icon" title="Add to Wishlist">
-                <span style="font-size: 1.2rem;">♡</span>
+                <span>♡</span>
             </div>
 
             <!-- Product Image -->
@@ -50,8 +51,7 @@
                 {% if product.variants.count > 1 %}
                 <div class="color-swatches">
                     {% for variant in product.variants.all|slice:":4" %}
-                    <div class="color-swatch"
-                        style="background: {% if variant.color_name == 'Black' %}#000{% elif variant.color_name == 'Gold' %}#FFD700{% elif variant.color_name == 'Silver' %}#C0C0C0{% elif variant.color_name == 'Brown' %}#8B4513{% else %}linear-gradient(135deg, #667eea 0%, #764ba2 100%){% endif %};"
+                    <div class="color-swatch" data-color="{{ variant.color_name|lower }}"
                         title="{{ variant.color_name }}">
                     </div>
                     {% endfor %}
@@ -94,4 +94,158 @@
     </div>
     {% endif %}
 </section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Wishlist functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get all wishlist icons
+        const wishlistIcons = document.querySelectorAll('.wishlist-icon');
+
+        // Load wishlist from localStorage
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+
+        // Function to update wishlist icon
+        function updateWishlistIcon(icon, productSlug) {
+            const heartSpan = icon.querySelector('span');
+            if (wishlist.includes(productSlug)) {
+                heartSpan.textContent = '♥';  // Filled heart
+                heartSpan.style.color = '#e74c3c';  // Red color
+                icon.title = 'Remove from Wishlist';
+            } else {
+                heartSpan.textContent = '♡';  // Empty heart
+                heartSpan.style.color = '#333';  // Default color
+                icon.title = 'Add to Wishlist';
+            }
+        }
+
+        // Initialize wishlist icons
+        wishlistIcons.forEach(icon => {
+            const productCard = icon.closest('.product-card');
+            const productLink = productCard.querySelector('a[href*="products/"]');
+            const productSlug = productLink ? productLink.href.split('/').filter(Boolean).pop() : null;
+
+            if (productSlug) {
+                icon.dataset.productSlug = productSlug;
+                updateWishlistIcon(icon, productSlug);
+
+                // Add click event
+                icon.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const slug = this.dataset.productSlug;
+                    const index = wishlist.indexOf(slug);
+
+                    if (index > -1) {
+                        // Remove from wishlist
+                        wishlist.splice(index, 1);
+                        showNotification('Removed from wishlist', 'info');
+                    } else {
+                        // Add to wishlist
+                        wishlist.push(slug);
+                        showNotification('Added to wishlist ♥', 'success');
+                    }
+
+                    // Save to localStorage
+                    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+
+                    // Update icon
+                    updateWishlistIcon(this, slug);
+
+                    // Update wishlist count in nav
+                    updateWishlistCount();
+                });
+            }
+        });
+
+        // Update wishlist count in navigation
+        function updateWishlistCount() {
+            const wishlistBadge = document.querySelector('.icon-link[title="Wishlist"] .icon-badge');
+            if (wishlistBadge) {
+                const count = wishlist.length;
+                if (count > 0) {
+                    wishlistBadge.textContent = count;
+                    wishlistBadge.style.display = 'block';
+                } else {
+                    wishlistBadge.style.display = 'none';
+                }
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `wishlist-notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: ${type === 'success' ? '#d4edda' : '#d1ecf1'};
+            color: ${type === 'success' ? '#155724' : '#0c5460'};
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        `;
+
+            document.body.appendChild(notification);
+
+            // Remove after 2 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        // Initial count update
+        updateWishlistCount();
+    });
+
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+    
+    .wishlist-icon {
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+    
+    .wishlist-icon:hover {
+        transform: scale(1.2);
+    }
+    
+    .wishlist-icon:active {
+        transform: scale(0.9);
+    }
+`;
+    document.head.appendChild(style);
+</script>
 {% endblock %}

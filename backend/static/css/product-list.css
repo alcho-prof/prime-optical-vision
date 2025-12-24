@@ -102,6 +102,12 @@
     border-color: var(--primary-black);
 }
 
+.wishlist-icon span {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+
 /* Product Info Section */
 .product-info {
     padding: 20px;
@@ -166,6 +172,46 @@
     color: var(--text-secondary);
     font-weight: 700;
 }
+
+/* Color Swatch Colors - Using data attributes */
+.color-swatch[data-color="black"] {
+    background: #000;
+}
+
+.color-swatch[data-color="gold"] {
+    background: #FFD700;
+}
+
+.color-swatch[data-color="silver"] {
+    background: #C0C0C0;
+}
+
+.color-swatch[data-color="brown"] {
+    background: #8B4513;
+}
+
+.color-swatch[data-color="white"] {
+    background: #FFFFFF;
+    border-color: #ddd;
+}
+
+.color-swatch[data-color="blue"] {
+    background: #4A90E2;
+}
+
+.color-swatch[data-color="red"] {
+    background: #E74C3C;
+}
+
+.color-swatch[data-color="green"] {
+    background: #27AE60;
+}
+
+/* Default gradient for unknown colors */
+.color-swatch:not([data-color="black"]):not([data-color="gold"]):not([data-color="silver"]):not([data-color="brown"]):not([data-color="white"]):not([data-color="blue"]):not([data-color="red"]):not([data-color="green"]) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
 
 /* Rating Display - Minimal */
 .product-rating {

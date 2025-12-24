@@ -1,5 +1,26 @@
 {% extends 'base.html' %}
 
+{% block extra_css %}
+<style>
+    .payment-method-radio {
+        margin-right: 10px;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .payment-option-label:has(input:checked) {
+        border-color: #4CAF50 !important;
+        background-color: #f0f9f0 !important;
+    }
+
+    .payment-option-label:hover {
+        border-color: #999 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container" style="padding: 40px 20px;">
     <h2>Checkout</h2>
@@ -62,8 +83,30 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 20px; padding: 15px; background: #eee; border-radius: 4px;">
-                    <strong>Payment Method:</strong> Cash on Delivery (COD)
+                <div
+                    style="margin-top: 20px; margin-bottom: 20px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+                    <label style="display: block; margin-bottom: 15px; font-weight: bold; font-size: 1.1rem;">Payment
+                        Method</label>
+
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        {% for choice in form.payment_method %}
+                        <label
+                            style="display: flex; align-items: center; padding: 15px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                            {{ choice.tag }}
+                            <span style="margin-left: 10px; flex: 1;">
+                                {{ choice.choice_label }}
+                                {% if choice.data.value == 'COD' %}
+                                <small style="display: block; color: #666; margin-top: 5px;">Pay when you receive your
+                                    order</small>
+                                {% else %}
+                                <small style="display: block; color: #666; margin-top: 5px;">Pay securely online via
+                                    Razorpay</small>
+                                {% endif %}
+                            </span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    {{ form.payment_method.errors }}
                 </div>
 
                 <button type="submit" class="btn-primary"

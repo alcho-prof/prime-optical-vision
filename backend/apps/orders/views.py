@@ -18,6 +18,7 @@ def checkout_view(request):
                 order.user = request.user
             
             order.total_amount = cart.get_total_price()
+            order.payment_method = form.cleaned_data['payment_method']
             order.save()
             
             for item in cart:
@@ -33,9 +34,16 @@ def checkout_view(request):
             # Clear the cart
             cart.clear()
             
-            # Redirect to success (Bypassing Payment for now as per user request)
-            messages.success(request, f"Order #{order.id} placed successfully!")
-            return redirect('orders:success', order_id=order.id)
+            # Redirect based on payment method
+            if order.payment_method == 'COD':
+                # Cash on Delivery - Direct to success
+                messages.success(request, f"Order #{order.id} placed successfully! Pay cash on delivery.")
+                return redirect('orders:success', order_id=order.id)
+            else:
+                # Online Payment - Redirect to payment gateway
+                messages.info(request, "Redirecting to payment gateway...")
+                return redirect('billing:payment', order_id=order.id)
+            
             
     else:
         # Pre-fill form if user is authenticated
