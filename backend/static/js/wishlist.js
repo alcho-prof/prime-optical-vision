@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Handle add to cart button clicks
     document.querySelectorAll('.btn-add-cart').forEach(button => {
         button.addEventListener('click', function () {
-            const productId = this.dataset.productId;
-            addToCart(productId);
+            const variantId = this.dataset.variantId;
+            addToCart(variantId);
         });
     });
 });
@@ -90,11 +90,28 @@ async function removeFromWishlist(productId, button) {
 
 /**
  * Add product to cart
- * @param {number} productId - The product ID to add to cart
+ * @param {number} variantId - The variant ID to add to cart
  */
-function addToCart(productId) {
-    // TODO: Implement add to cart functionality
-    showNotification('Add to cart functionality coming soon!', 'info');
+function addToCart(variantId) {
+    if (!variantId) {
+        showNotification('Product Unavailable', 'error');
+        return;
+    }
+
+    // Create a form to submit POST request
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/cart/add/${variantId}/`;
+
+    // Add CSRF Token
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = getCookie('csrftoken');
+    form.appendChild(csrfInput);
+
+    document.body.appendChild(form);
+    form.submit();
 }
 
 /**

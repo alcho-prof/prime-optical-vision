@@ -50,9 +50,12 @@
                 <div class="product-price">{{ item.product.price_range }}</div>
 
                 <div class="product-actions">
-                    <button class="btn-add-cart" data-product-id="{{ item.product.id }}">
+                    {% with default_variant=item.product.variants.first %}
+                    <button class="btn-add-cart" {% if default_variant %}data-variant-id="{{ default_variant.id }}" {%
+                        else %}disabled title="No variants available" {% endif %}>
                         Add to Cart
                     </button>
+                    {% endwith %}
                     <a href="{% url 'catalog:product_detail' item.product.slug %}" class="btn-view">
                         View Details
                     </a>
@@ -77,5 +80,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/wishlist.js' %}"></script>
+<script src="{% static 'js/wishlist.js' %}?v=2"></script>
 {% endblock %}
