@@ -21,6 +21,7 @@ class HybridCart:
     def __init__(self, request):
         self.request = request
         self.user = request.user
+        self.session = request.session
         
         if self.user.is_authenticated:
             # Use database cart for logged-in users
@@ -28,7 +29,6 @@ class HybridCart:
             self.storage_type = 'database'
         else:
             # Use session cart for anonymous users
-            self.session = request.session
             cart = self.session.get(settings.CART_SESSION_ID)
             if not cart:
                 cart = self.session[settings.CART_SESSION_ID] = {}

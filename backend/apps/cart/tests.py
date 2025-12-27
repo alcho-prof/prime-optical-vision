@@ -101,3 +101,36 @@ class CartSessionTests(TestCase):
         cart_obj = response.context['cart']
         self.assertEqual(len(cart_obj), 1)
         self.assertEqual(cart_obj.get_total_price(), Decimal('500.00'))
+
+
+class CartSyncTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testsync', email='sync@test.com', password='password')
+        self.category = Category.objects.create(name='Glasses')
+        self.product = Product.objects.create(name='Frame Sync', category=self.category, price='1000.00')
+        self.variant = ProductVariant.objects.create(product=self.product, color_name='Black')
+
+    def test_sync_on_login(self):
+        """Test that guest cart items are merged into database cart on login"""
+        # 1. Add item as guest via view
+        self.client.post(reverse('cart:add', args=[self.variant.id]), {'quantity': 1})
+        
+        # Verify item in session
+        session = self.client.session
+        self.assertIn(settings.CART_SESSION_ID, session)
+        
+        # 2. Login (triggers signal)
+        login_success = self.client.login(email='sync@test.com', password='password')
+        self.assertTrue(login_success)
+        
+        # 3. Verify Database Cart has the item
+        from apps.cart.models import CartItem
+        self.assertEqual(CartItem.objects.count(), 1)
+        item = CartItem.objects.first()
+        self.assertEqual(item.product_variant, self.variant)
+        self.assertEqual(item.quantity, 1)
+        self.assertEqual(item.cart.user, self.user)
+        
+        # 4. Verify Session Cart is cleared
+        session = self.client.session
+        self.assertNotIn(settings.CART_SESSION_ID, session)
