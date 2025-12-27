@@ -1,106 +1,84 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block extra_css %}
-<style>
-    .payment-method-radio {
-        margin-right: 10px;
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-    }
-
-    .payment-option-label:has(input:checked) {
-        border-color: #4CAF50 !important;
-        background-color: #f0f9f0 !important;
-    }
-
-    .payment-option-label:hover {
-        border-color: #999 !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/checkout.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container" style="padding: 40px 20px;">
+<div class="container checkout-container">
     <h2>Checkout</h2>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px;">
+    <div class="checkout-grid">
 
         <!-- Left: Shipping Form -->
         <div class="shipping-form">
-            <h3 style="margin-bottom: 20px;">Shipping Details</h3>
+            <h3>Shipping Details</h3>
             <form method="post">
                 {% csrf_token %}
 
                 {% if form.errors %}
-                <div
-                    style="background: #ffebee; color: #c62828; padding: 10px; margin-bottom: 20px; border-radius: 4px;">
+                <div class="form-error">
                     Please correct the errors below.
                 </div>
                 {% endif %}
 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px;">Full Name</label>
+                <div class="form-group">
+                    <label>Full Name</label>
                     {{ form.full_name }}
                     {{ form.full_name.errors }}
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px;">Email</label>
+                <div class="form-group">
+                    <label>Email</label>
                     {{ form.email }}
                     {{ form.email.errors }}
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px;">Phone Number</label>
+                <div class="form-group">
+                    <label>Phone Number</label>
                     {{ form.phone_number }}
                     {{ form.phone_number.errors }}
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px;">Address Line 1</label>
+                <div class="form-group">
+                    <label>Address Line 1</label>
                     {{ form.address_line_1 }}
                     {{ form.address_line_1.errors }}
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px;">Address Line 2 (Optional)</label>
+                <div class="form-group">
+                    <label>Address Line 2 (Optional)</label>
                     {{ form.address_line_2 }}
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px;">City</label>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>City</label>
                         {{ form.city }}
                         {{ form.city.errors }}
                     </div>
 
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px;">Postal Code</label>
+                    <div class="form-group">
+                        <label>Postal Code</label>
                         {{ form.postal_code }}
                         {{ form.postal_code.errors }}
                     </div>
                 </div>
 
-                <div
-                    style="margin-top: 20px; margin-bottom: 20px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-                    <label style="display: block; margin-bottom: 15px; font-weight: bold; font-size: 1.1rem;">Payment
-                        Method</label>
+                <div class="payment-section">
+                    <label>Payment Method</label>
 
-                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="payment-options">
                         {% for choice in form.payment_method %}
-                        <label
-                            style="display: flex; align-items: center; padding: 15px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s;">
+                        <label class="payment-option-label">
                             {{ choice.tag }}
-                            <span style="margin-left: 10px; flex: 1;">
+                            <span class="payment-option-text">
                                 {{ choice.choice_label }}
                                 {% if choice.data.value == 'COD' %}
-                                <small style="display: block; color: #666; margin-top: 5px;">Pay when you receive your
-                                    order</small>
+                                <small class="payment-option-description">Pay when you receive your order</small>
                                 {% else %}
-                                <small style="display: block; color: #666; margin-top: 5px;">Pay securely online via
-                                    Razorpay</small>
+                                <small class="payment-option-description">Pay securely online via Razorpay</small>
                                 {% endif %}
                             </span>
                         </label>
@@ -109,28 +87,27 @@
                     {{ form.payment_method.errors }}
                 </div>
 
-                <button type="submit" class="btn-primary"
-                    style="width: 100%; margin-top: 20px; padding: 15px; font-size: 1.1rem;">
+                <button type="submit" class="btn-primary btn-place-order">
                     Place Order
                 </button>
             </form>
         </div>
 
         <!-- Right: Order Summary -->
-        <div class="order-summary" style="background: #f9f9f9; padding: 20px; border-radius: 8px; height: fit-content;">
-            <h3 style="margin-bottom: 20px;">Order Summary</h3>
+        <div class="order-summary">
+            <h3>Order Summary</h3>
 
-            <table style="width: 100%; border-collapse: collapse;">
+            <table class="order-items-table">
                 {% for item in cart %}
-                <tr style="border-bottom: 1px solid #ddd;">
-                    <td style="padding: 10px 0;">
+                <tr class="order-item-row">
+                    <td class="order-item-details">
                         <strong>{{ item.product_variant.product.name }}</strong>
                         {% if item.lens %}
                         <br><small>+ {{ item.lens.name }}</small>
                         {% endif %}
                         <br><small>{{ item.product_variant.color_name }}</small>
                     </td>
-                    <td style="padding: 10px 0; text-align: right;">
+                    <td class="order-item-price">
                         {{ item.quantity }} x ₹{{ item.price }}
                         <br>
                         <strong>₹{{ item.total_price }}</strong>
@@ -139,8 +116,7 @@
                 {% endfor %}
             </table>
 
-            <div
-                style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #ddd; text-align: right; font-size: 1.4rem;">
+            <div class="order-total">
                 <strong>Total: ₹{{ cart.get_total_price }}</strong>
             </div>
         </div>
