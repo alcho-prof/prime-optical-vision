@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+import datetime
 
 class User(AbstractUser):
     """
@@ -19,3 +21,18 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class PhoneVerification(models.Model):
+    """Store OTP codes for phone verification"""
+    phone_number = models.CharField(max_length=15)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_verified = models.BooleanField(default=False) # Marked True once verified (optional usage)
+
+    def is_valid(self):
+        """Check if OTP is within 5 minutes expiry"""
+        return self.created_at >= timezone.now() - datetime.timedelta(minutes=5)
+
+    def __str__(self):
+        return f"{self.phone_number} - {self.code}"

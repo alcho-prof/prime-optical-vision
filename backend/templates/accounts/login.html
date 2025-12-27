@@ -1,39 +1,325 @@
 {% extends 'base.html' %}
+{% load socialaccount %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 400px;
+        margin: 60px auto;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: white;
+    }
+
+    .auth-tabs {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .auth-tab {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        background: none;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        color: #666;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+    }
+
+    .auth-tab.active {
+        color: #000;
+        border-bottom: 2px solid #000;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        background: #000;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 20px 0;
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: "";
+        flex: 1;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .divider::before {
+        margin-right: 10px;
+    }
+
+    .divider::after {
+        margin-left: 10px;
+    }
+
+    .btn-google {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 12px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        color: #333;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.2s;
+        gap: 10px;
+    }
+
+    .btn-google:hover {
+        background: #f8f8f8;
+    }
+
+    #otpInputs {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    #otpInputs input {
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        background: #333;
+        color: white;
+        border-radius: 8px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container"
-    style="max-width: 400px; margin: 60px auto; padding: 30px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-    <h2 style="text-align: center; margin-bottom: 30px;">Login</h2>
+<div class="auth-container">
+    <h2 style="text-align: center; margin-bottom: 20px;">Welcome Back</h2>
 
-    <form method="post">
-        {% csrf_token %}
+    <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('email')">Email</button>
+        <button class="auth-tab" onclick="switchTab('phone')">Phone OTP</button>
+    </div>
 
-        {% if form.errors %}
-        <div style="background-color: #ffebee; color: #c62828; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
-            <p>Invalid email or password.</p>
+    <!-- Email Login Form -->
+    <div id="emailSection">
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div
+                style="background-color: #ffebee; color: #c62828; padding: 10px; border-radius: 4px; margin-bottom: 20px;">
+                <p>Invalid email or password.</p>
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <input type="text" name="username" class="form-control" placeholder="Email Address" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" class="form-control" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn-primary">Sign In</button>
+        </form>
+    </div>
+
+    <!-- Phone OTP Form -->
+    <div id="phoneSection" style="display: none;">
+        <div id="stepRequest">
+            <div class="form-group">
+                <input type="tel" id="phoneNumber" class="form-control" placeholder="Enter Mobile Number (+91...)"
+                    maxlength="15">
+            </div>
+            <button type="button" class="btn-primary" onclick="requestOTP()">Get OTP</button>
         </div>
-        {% endif %}
 
-        <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Email</label>
-            <input type="text" name="username" class="form-control" required
-                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        <div id="stepVerify" style="display: none;">
+            <p style="text-align: center; color: #666; margin-bottom: 15px;">Enter 6-digit code sent to your phone</p>
+            <div class="form-group">
+                <input type="text" id="otpCode" class="form-control" placeholder="Enter 6-digit OTP" maxlength="6"
+                    style="text-align: center; letter-spacing: 5px; font-size: 1.2rem;">
+            </div>
+            <button type="button" class="btn-primary" onclick="verifyOTP()">Verify & Login</button>
+            <p style="text-align: center; margin-top: 10px; cursor: pointer; color: blue;" onclick="resetPhone()">Change
+                Number</p>
         </div>
+        <div id="otpMessage" style="color: green; text-align: center; margin-top: 5px;"></div>
+        <div id="otpError" style="color: red; text-align: center; margin-top: 5px;"></div>
+    </div>
 
-        <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Password</label>
-            <input type="password" name="password" class="form-control"
-                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-        </div>
+    <div class="divider">OR</div>
 
-        <button type="submit"
-            style="width: 100%; background: #000; color: white; padding: 12px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">
-            Sign In
-        </button>
-    </form>
+    <!-- Google Login -->
+    <a href="{% provider_login_url 'google' %}" class="btn-google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20"
+            height="20">
+        Continue with Google
+    </a>
 
-    <div style="text-align: center; margin-top: 20px;">
-        <p>New customer? <a href="{% url 'accounts:register' %}">Create Account</a></p>
+    <div style="text-align: center; margin-top: 20px; font-size: 0.9rem;">
+        New customer? <a href="{% url 'accounts:register' %}" style="text-decoration: underline;">Create Account</a>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchTab(tab) {
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        if (tab === 'email') {
+            document.querySelector('.auth-tab:first-child').classList.add('active');
+            document.getElementById('emailSection').style.display = 'block';
+            document.getElementById('phoneSection').style.display = 'none';
+        } else {
+            document.querySelector('.auth-tab:last-child').classList.add('active');
+            document.getElementById('emailSection').style.display = 'none';
+            document.getElementById('phoneSection').style.display = 'block';
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function requestOTP() {
+        const phone = document.getElementById('phoneNumber').value;
+        const msg = document.getElementById('otpMessage');
+        const err = document.getElementById('otpError');
+
+        if (!phone || phone.length < 10) {
+            err.textContent = "Please enter a valid phone number";
+            return;
+        }
+
+        try {
+            const response = await fetch("{% url 'accounts:request_otp' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ 'phone': phone })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 'success') {
+                document.getElementById('stepRequest').style.display = 'none';
+                document.getElementById('stepVerify').style.display = 'block';
+                msg.textContent = `OTP sent to ${phone}. Check console (Development Mode).`;
+                err.textContent = "";
+            } else {
+                err.textContent = data.message || "Failed to send OTP";
+            }
+        } catch (e) {
+            console.error(e);
+            err.textContent = "Network error";
+        }
+    }
+
+    async function verifyOTP() {
+        const phone = document.getElementById('phoneNumber').value;
+        const otp = document.getElementById('otpCode').value;
+        const err = document.getElementById('otpError');
+
+        if (!otp || otp.length !== 6) {
+            err.textContent = "Enter 6-digit OTP";
+            return;
+        }
+
+        try {
+            const response = await fetch("{% url 'accounts:verify_otp' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ 'phone': phone, 'otp': otp })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 'success') {
+                window.location.href = data.redirect_url || "/";
+            } else {
+                err.textContent = data.message || "Invalid OTP";
+            }
+        } catch (e) {
+            console.error(e);
+            err.textContent = "Network error";
+        }
+    }
+
+    function resetPhone() {
+        document.getElementById('stepRequest').style.display = 'block';
+        document.getElementById('stepVerify').style.display = 'none';
+        document.getElementById('otpCode').value = '';
+        document.getElementById('otpMessage').textContent = '';
+        document.getElementById('otpError').textContent = '';
+    }
+</script>
 {% endblock %}

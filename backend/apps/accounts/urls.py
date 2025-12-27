@@ -15,4 +15,8 @@ urlpatterns = [
         authentication_form=CustomAuthenticationForm
     ), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    
+    # OTP Auth
+    path('request-otp/', views.request_otp, name='request_otp'),
+    path('verify-otp/', views.verify_otp, name='verify_otp'),
 ]
