@@ -33,7 +33,7 @@
                 {% if cover_variant and cover_variant.image %}
                 <img src="{{ cover_variant.image.url }}" alt="{{ item.product.name }}">
                 {% else %}
-                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">
+                <div class="no-image-placeholder">
                     No Image
                 </div>
                 {% endif %}

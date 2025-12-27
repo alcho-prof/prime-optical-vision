@@ -19,7 +19,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 
-<body>
+<body data-user-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">
 
     <header>
         <div class="nav-container">

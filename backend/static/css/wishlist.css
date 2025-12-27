@@ -249,3 +249,11 @@
         opacity: 0;
     }
 }
+/* No Image Placeholder */
+.no-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+}
