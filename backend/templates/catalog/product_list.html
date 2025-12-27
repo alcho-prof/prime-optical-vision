@@ -2,8 +2,7 @@
 {% load static %}
 
 {% block title %}Eyewear Collection | Prime Optical{% endblock %}
-{% block meta_description %}Explore our premium collection of sunglasses, eyeglasses, and computer glasses.{% endblock
-%}
+{% block meta_description %}Premium Eyewear Collection{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/product-list.css' %}">
@@ -63,7 +62,7 @@
                 </div>
                 {% endif %}
 
-                <!-- Rating (Placeholder - will be implemented later) -->
+                <!-- Rating -->
                 <div class="product-rating">
                     <span class="rating-stars">★ 4.8</span>
                     <span class="rating-count">(120)</span>
@@ -74,10 +73,6 @@
                     <div class="product-price">
                         {{ product.price_range }}
                     </div>
-                    <!-- Uncomment when discount feature is implemented
-                    <div class="product-price-original">₹3,000</div>
-                    <div class="product-discount">33% OFF</div>
-                    -->
                 </div>
 
                 <!-- View Details Button -->
@@ -94,7 +89,6 @@
     </div>
     {% endif %}
 </section>
-
 {% endblock %}
 
 {% block extra_js %}
