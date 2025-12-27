@@ -71,10 +71,7 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 # Authentication Settings
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
+
 
 # Google Auth Configuration
 SOCIALACCOUNT_PROVIDERS = {
@@ -179,6 +176,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = [
     'apps.accounts.backends.PasswordlessAuthBackend',  # Custom: Checks for passwordless flag first
     'django.contrib.auth.backends.ModelBackend',       # Default: Checks standard password
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 
