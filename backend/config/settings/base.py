@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'apps.prescriptions',
     'apps.appointments',
     'apps.virtual_tryon',
+    'apps.wishlist',
 ]
 
 MIDDLEWARE = [

@@ -47,6 +47,9 @@ urlpatterns = [
     
     # Virtual Try-On
     path('virtual-tryon/', include('apps.virtual_tryon.urls')),
+    
+    # Wishlist
+    path('wishlist/', include('apps.wishlist.urls')),
 ]
 
 # Serve media files in development

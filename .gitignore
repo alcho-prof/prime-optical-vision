@@ -28,3 +28,4 @@ local_settings.py
 supabase/.branches
 supabase/.temp
 
+credentials.json
