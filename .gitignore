@@ -84,3 +84,5 @@ htmlcov/
 *.bak
 *.tmp
 backend/media/
+optical project image/
+backend/media/
