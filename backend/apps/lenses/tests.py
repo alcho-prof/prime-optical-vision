@@ -4,7 +4,13 @@ from django.urls import reverse
 from django.conf import settings
 from apps.catalog.models import Category, Product, ProductVariant
 from apps.lenses.models import LensType
-from apps.cart.cart import Cart
+from django.contrib.auth.models import AnonymousUser
+from apps.cart.hybrid_cart import HybridCart
+
+class MockRequest:
+    def __init__(self, session, user=None):
+        self.session = session
+        self.user = user or AnonymousUser()
 
 class LensSelectionTests(TestCase):
     def setUp(self):
@@ -24,7 +30,7 @@ class LensSelectionTests(TestCase):
         self.client.post(url, {'quantity': 1, 'lens_id': self.lens_single.id})
         
         cart = self.client.session[settings.CART_SESSION_ID]
-        cart_key_1 = f"{self.variant.id}-{self.lens_single.id}"
+        cart_key_1 = f"{self.variant.id}-{self.lens_single.id}-"
         
         self.assertIn(cart_key_1, cart)
         self.assertEqual(cart[cart_key_1]['lens_id'], str(self.lens_single.id))
@@ -48,7 +54,8 @@ class LensSelectionTests(TestCase):
         self.client.post(url, {'quantity': 2, 'lens_id': self.lens_single.id})
         
         # Explicitly check cart object logic
-        cart = Cart(self.client)
+        request = MockRequest(self.client.session)
+        cart = HybridCart(request)
         total = cart.get_total_price()
         
         expected_total = (Decimal('1000.00') + Decimal('500.00')) * 2

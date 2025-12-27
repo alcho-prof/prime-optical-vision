@@ -4,9 +4,14 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.orders.models import Order, OrderItem
 from apps.catalog.models import Category, Product, ProductVariant
-from apps.cart.cart import Cart
+from apps.cart.hybrid_cart import HybridCart
 
 User = get_user_model()
+
+class MockRequest:
+    def __init__(self, session, user=None):
+        self.session = session
+        self.user = user
 
 class CheckoutTests(TestCase):
     def setUp(self):
@@ -27,7 +32,8 @@ class CheckoutTests(TestCase):
             'phone_number': '1234567890',
             'address_line_1': '123 Street',
             'city': 'Test City',
-            'postal_code': '12345'
+            'postal_code': '12345',
+            'payment_method': 'COD'
         }
         response = self.client.post(url, data)
         
@@ -45,8 +51,9 @@ class CheckoutTests(TestCase):
         self.assertEqual(order.items.first().product_variant, self.variant)
         
         # 6. Verify Cart Cleared
-        session = self.client.session
-        cart = Cart(self.client)
+        from django.contrib.auth.models import AnonymousUser
+        request = MockRequest(self.client.session, AnonymousUser())
+        cart = HybridCart(request)
         self.assertEqual(len(cart), 0)
 
     def test_authenticated_user_checkout_links_user(self):
@@ -59,7 +66,8 @@ class CheckoutTests(TestCase):
             'phone_number': '1112223333',
             'address_line_1': 'User Addr',
             'city': 'City',
-            'postal_code': '00000'
+            'postal_code': '00000',
+            'payment_method': 'COD'
         })
         
         order = Order.objects.first()

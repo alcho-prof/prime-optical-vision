@@ -1,16 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-from .cart import Cart
+from .hybrid_cart import HybridCart
 from apps.catalog.models import ProductVariant
 
 def cart_detail(request):
-    cart = Cart(request)
+    cart = HybridCart(request)
     return render(request, 'cart/cart_detail.html', {'cart': cart})
 
 @require_POST
 def add_to_cart(request, variant_id):
-    cart = Cart(request)
+    cart = HybridCart(request)
     variant = get_object_or_404(ProductVariant, id=variant_id)
     
     try:
@@ -38,7 +38,7 @@ def add_to_cart(request, variant_id):
 
 @require_POST
 def remove_from_cart(request, item_id):
-    cart = Cart(request)
+    cart = HybridCart(request)
     
     # Parse the ID
     cart_id = str(item_id)
@@ -57,7 +57,7 @@ def remove_from_cart(request, item_id):
 
 @require_POST
 def update_quantity(request, item_id):
-    cart = Cart(request)
+    cart = HybridCart(request)
     
     # Parse composite ID
     cart_id = str(item_id)

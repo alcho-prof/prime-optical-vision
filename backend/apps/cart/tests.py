@@ -41,9 +41,14 @@ class CartSessionTests(TestCase):
         session = self.client.session
         self.assertIn(settings.CART_SESSION_ID, session)
         cart = session[settings.CART_SESSION_ID]
-        self.assertIn(self.variant_id, cart)
-        self.assertEqual(cart[self.variant_id]['quantity'], 2)
-        self.assertEqual(cart[self.variant_id]['price'], '500.00')
+        
+        # Key format: variant_id-lens_id-prescription_id
+        # Both lens and prescription are None -> 'id--'
+        cart_key = f"{self.variant_id}--"
+        
+        self.assertIn(cart_key, cart)
+        self.assertEqual(cart[cart_key]['quantity'], 2)
+        self.assertEqual(cart[cart_key]['price'], '500.00')
 
     def test_add_same_item_increases_quantity(self):
         url = reverse('cart:add', args=[self.variant.id])
@@ -51,35 +56,40 @@ class CartSessionTests(TestCase):
         self.client.post(url, {'quantity': 2})
         
         session = self.client.session
+        cart_key = f"{self.variant_id}--"
         cart = session[settings.CART_SESSION_ID]
-        self.assertEqual(cart[self.variant_id]['quantity'], 3)
+        self.assertEqual(cart[cart_key]['quantity'], 3)
 
     def test_remove_from_cart(self):
+        cart_key = f"{self.variant_id}--"
+        
         # Manually set session
         session = self.client.session
         session[settings.CART_SESSION_ID] = {
-            self.variant_id: {'quantity': 1, 'price': '500.00'}
+            cart_key: {'quantity': 1, 'price': '500.00', 'variant_id': self.variant.id}
         }
         session.save()
         
-        url = reverse('cart:remove', args=[self.variant.id])
+        url = reverse('cart:remove', args=[cart_key])
         self.client.post(url)
         
         session = self.client.session
-        self.assertNotIn(self.variant_id, session[settings.CART_SESSION_ID])
+        self.assertNotIn(cart_key, session[settings.CART_SESSION_ID])
 
     def test_update_quantity(self):
+        cart_key = f"{self.variant_id}--"
+        
         session = self.client.session
         session[settings.CART_SESSION_ID] = {
-            self.variant_id: {'quantity': 1, 'price': '500.00'}
+            cart_key: {'quantity': 1, 'price': '500.00', 'variant_id': self.variant.id}
         }
         session.save()
         
-        url = reverse('cart:update', args=[self.variant.id])
+        url = reverse('cart:update', args=[cart_key])
         self.client.post(url, {'quantity': 5})
         
         session = self.client.session
-        self.assertEqual(session[settings.CART_SESSION_ID][self.variant_id]['quantity'], 5)
+        self.assertEqual(session[settings.CART_SESSION_ID][cart_key]['quantity'], 5)
 
     def test_context_processor_exposes_cart(self):
         """Test that templates receive the cart object"""

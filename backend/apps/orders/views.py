@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Order, OrderItem
 from .forms import OrderCreateForm
-from apps.cart.cart import Cart
+from apps.cart.hybrid_cart import HybridCart
 
 def checkout_view(request):
-    cart = Cart(request)
+    cart = HybridCart(request)
     if len(cart) == 0:
         messages.warning(request, "Your cart is empty.")
         return redirect('cart:detail')

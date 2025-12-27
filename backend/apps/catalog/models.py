@@ -163,7 +163,7 @@ class Product(TimeStampedModel):
         
         # Auto-generate price_range if not set
         if not self.price_range and self.price:
-            self.price_range = f"₹{int(self.price)}"
+            self.price_range = f"₹{int(float(self.price))}"
         
         super().save(*args, **kwargs)
 

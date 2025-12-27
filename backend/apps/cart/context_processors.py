@@ -1,4 +1,4 @@
-from .cart import Cart
+from .hybrid_cart import HybridCart
 
 def cart_processor(request):
-    return {'cart': Cart(request)}
+    return {'cart': HybridCart(request)}
