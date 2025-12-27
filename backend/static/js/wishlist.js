@@ -19,6 +19,25 @@ function getCookie(name) {
     return cookieValue;
 }
 
+// Initialize event listeners when DOM is ready
+document.addEventListener('DOMContentLoaded', function () {
+    // Handle remove button clicks
+    document.querySelectorAll('.remove-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const productId = this.dataset.productId;
+            removeFromWishlist(productId, this);
+        });
+    });
+
+    // Handle add to cart button clicks
+    document.querySelectorAll('.btn-add-cart').forEach(button => {
+        button.addEventListener('click', function () {
+            const productId = this.dataset.productId;
+            addToCart(productId);
+        });
+    });
+});
+
 /**
  * Remove item from wishlist
  * @param {number} productId - The product ID to remove

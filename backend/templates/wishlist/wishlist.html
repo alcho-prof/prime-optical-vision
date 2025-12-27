@@ -23,8 +23,8 @@
     {% if wishlist_items %}
     <div class="wishlist-grid">
         {% for item in wishlist_items %}
-        <div class="wishlist-item" data-wishlist-id="{{ item.id }}">
-            <button class="remove-btn" onclick="removeFromWishlist({{ item.product.id }}, this)">
+        <div class="wishlist-item" data-wishlist-id="{{ item.id }}" data-product-id="{{ item.product.id }}">
+            <button class="remove-btn" data-product-id="{{ item.product.id }}">
                 <span>✕</span>
             </button>
 
@@ -50,7 +50,7 @@
                 <div class="product-price">{{ item.product.price_range }}</div>
 
                 <div class="product-actions">
-                    <button class="btn-add-cart" onclick="addToCart({{ item.product.id }})">
+                    <button class="btn-add-cart" data-product-id="{{ item.product.id }}">
                         Add to Cart
                     </button>
                     <a href="{% url 'catalog:product_detail' item.product.slug %}" class="btn-view">
