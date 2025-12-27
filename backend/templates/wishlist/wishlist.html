@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist | Prime Optical{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/product-list.css' %}">
+<style>
+    .wishlist-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .wishlist-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .wishlist-header h1 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .wishlist-count {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .empty-wishlist {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+    .empty-wishlist-icon {
+        font-size: 80px;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+
+    .empty-wishlist h2 {
+        font-size: 1.8rem;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .empty-wishlist p {
+        color: #999;
+        margin-bottom: 30px;
+    }
+
+    .btn-browse {
+        display: inline-block;
+        padding: 12px 30px;
+        background: #333;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: background 0.3s;
+    }
+
+    .btn-browse:hover {
+        background: #555;
+    }
+
+    .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .wishlist-item {
+        position: relative;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .wishlist-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .remove-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        transition: all 0.3s;
+    }
+
+    .remove-btn:hover {
+        background: #ff4444;
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .product-image-container {
+        position: relative;
+        width: 100%;
+        height: 250px;
+        overflow: hidden;
+        background: #f5f5f5;
+    }
+
+    .product-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-info {
+        padding: 20px;
+    }
+
+    .product-category {
+        color: #999;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+
+    .product-name {
+        font-size: 1.2rem;
+        color: #333;
+        margin-bottom: 12px;
+        font-weight: 600;
+    }
+
+    .product-name a {
+        color: #333;
+        text-decoration: none;
+    }
+
+    .product-name a:hover {
+        color: #666;
+    }
+
+    .product-price {
+        font-size: 1.3rem;
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .product-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-add-cart,
+    .btn-view {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn-add-cart {
+        background: #333;
+        color: white;
+    }
+
+    .btn-add-cart:hover {
+        background: #555;
+    }
+
+    .btn-view {
+        background: #f0f0f0;
+        color: #333;
+    }
+
+    .btn-view:hover {
+        background: #e0e0e0;
+    }
+
+    .added-date {
+        font-size: 0.85rem;
+        color: #999;
+        margin-top: 10px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wishlist-container">
+    <div class="wishlist-header">
+        <h1>My Wishlist</h1>
+        <p class="wishlist-count">
+            {% if wishlist_items %}
+            {{ wishlist_items.count }} item{{ wishlist_items.count|pluralize }}
+            {% else %}
+            0 items
+            {% endif %}
+        </p>
+    </div>
+
+    {% if wishlist_items %}
+    <div class="wishlist-grid">
+        {% for item in wishlist_items %}
+        <div class="wishlist-item" data-wishlist-id="{{ item.id }}">
+            <button class="remove-btn" onclick="removeFromWishlist({{ item.product.id }}, this)">
+                <span>✕</span>
+            </button>
+
+            <div class="product-image-container">
+                {% with cover_variant=item.product.variants.first %}
+                {% if cover_variant and cover_variant.image %}
+                <img src="{{ cover_variant.image.url }}" alt="{{ item.product.name }}">
+                {% else %}
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">
+                    No Image
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+
+            <div class="product-info">
+                <div class="product-category">{{ item.product.category.name }}</div>
+                <h3 class="product-name">
+                    <a href="{% url 'catalog:product_detail' item.product.slug %}">
+                        {{ item.product.name }}
+                    </a>
+                </h3>
+                <div class="product-price">{{ item.product.price_range }}</div>
+
+                <div class="product-actions">
+                    <button class="btn-add-cart" onclick="addToCart({{ item.product.id }})">
+                        Add to Cart
+                    </button>
+                    <a href="{% url 'catalog:product_detail' item.product.slug %}" class="btn-view">
+                        View Details
+                    </a>
+                </div>
+
+                <div class="added-date">
+                    Added {{ item.created_at|timesince }} ago
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-wishlist">
+        <div class="empty-wishlist-icon">♡</div>
+        <h2>Your Wishlist is Empty</h2>
+        <p>Start adding products you love to your wishlist!</p>
+        <a href="{% url 'catalog:product_list' %}" class="btn-browse">Browse Products</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function removeFromWishlist(productId, button) {
+        const csrftoken = getCookie('csrftoken');
+        const wishlistItem = button.closest('.wishlist-item');
+
+        try {
+            const response = await fetch(`/wishlist/toggle/${productId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'removed') {
+                // Animate removal
+                wishlistItem.style.opacity = '0';
+                wishlistItem.style.transform = 'scale(0.8)';
+
+                setTimeout(() => {
+                    wishlistItem.remove();
+
+                    // Check if wishlist is now empty
+                    const remainingItems = document.querySelectorAll('.wishlist-item');
+                    if (remainingItems.length === 0) {
+                        location.reload(); // Reload to show empty state
+                    } else {
+                        // Update count
+                        const countEl = document.querySelector('.wishlist-count');
+                        if (countEl) {
+                            const count = remainingItems.length;
+                            countEl.textContent = `${count} item${count !== 1 ? 's' : ''}`;
+                        }
+                    }
+                }, 300);
+
+                showNotification('Removed from wishlist', 'info');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('Failed to remove item', 'error');
+        }
+    }
+
+    function addToCart(productId) {
+        // Implement add to cart functionality
+        showNotification('Add to cart functionality coming soon!', 'info');
+    }
+
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: ${type === 'error' ? '#ff4444' : type === 'info' ? '#4CAF50' : '#2196F3'};
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(400px); opacity: 0; }
+    }
+`;
+    document.head.appendChild(style);
+</script>
+{% endblock %}
