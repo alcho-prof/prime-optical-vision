@@ -8,7 +8,7 @@ import base64
 import json
 
 from apps.catalog.models import Product, ProductVariant
-from .models import TryOnSession, TryOnPhoto, FaceDetectionCache
+from .models import TryOnSession, TryOnPhoto, FaceDetectionCache, SpectacleFrame
 
 
 def virtual_tryon_view(request, slug=None):
@@ -135,3 +135,44 @@ def get_variant_overlay(request, variant_id):
             'success': False,
             'error': str(e)
         }, status=400)
+
+
+@require_http_methods(["GET"])
+def get_frames_models(request):
+    """Get list of available frames with 3D models and metadata"""
+    try:
+        frames = SpectacleFrame.objects.select_related('variant', 'variant__product').all()
+        
+        data = []
+        for frame in frames:
+            data.append({
+                'id': frame.variant.id,
+                'name': frame.variant.product.name,
+                'color': frame.variant.color_name,
+                'model_url': frame.model_file.url if frame.model_file else None,
+                'thumbnail_url': frame.variant.image.url if frame.variant.image else None,
+                'metadata': {
+                    'scale': frame.scaling_factor,
+                    'position': {
+                        'x': frame.offset_x,
+                        'y': frame.offset_y,
+                        'z': frame.offset_z
+                    },
+                    'rotation': {
+                        'x': frame.rotation_x,
+                        'y': frame.rotation_y,
+                        'z': frame.rotation_z
+                    }
+                }
+            })
+            
+        return JsonResponse({
+            'success': True,
+            'frames': data
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)

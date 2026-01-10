@@ -1,60 +1,68 @@
 /* Professional Black & White Glassmorphism Theme */
 :root {
-    /* Monochrome Color Palette */
-    --primary-black: #000000;
+    /* Lenskart-Inspired Color Palette */
+    --primary-black: #000042;
+    /* Deep Navy Blue */
     --primary-white: #FFFFFF;
-    --gray-50: #FAFAFA;
-    --gray-100: #F5F5F5;
-    --gray-200: #EEEEEE;
-    --gray-300: #E0E0E0;
-    --gray-400: #BDBDBD;
-    --gray-500: #9E9E9E;
-    --gray-600: #757575;
-    --gray-700: #616161;
-    --gray-800: #424242;
-    --gray-900: #212121;
+    --accent-teal: #329c92;
+    /* Lenskart Teal/Green */
+    --accent-orange: #ffa726;
+    /* Occasional accent */
 
-    /* Glass Effect Colors */
-    --glass-white: rgba(255, 255, 255, 0.1);
-    --glass-white-hover: rgba(255, 255, 255, 0.15);
-    --glass-black: rgba(0, 0, 0, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.18);
+    --gray-50: #F4F8FF;
+    /* Very light cool gray */
+    --gray-100: #E6EEFA;
+    --gray-200: #D8E4F5;
+    --gray-300: #BFCFE5;
+    --gray-400: #94A8C4;
+    --gray-500: #6B7D96;
+    --gray-600: #4A5A70;
+    --gray-700: #2C3A4D;
+    --gray-800: #1A2533;
+    --gray-900: #0D141C;
+
+    /* Glass Effect Colors - Modified for Navy Theme */
+    --glass-white: rgba(255, 255, 255, 0.9);
+    --glass-white-hover: rgba(255, 255, 255, 1);
+    --glass-navy: rgba(0, 0, 66, 0.85);
+    /* Navy Glass */
+    --glass-border: rgba(0, 0, 66, 0.1);
 
     /* Semantic Colors */
-    --text-primary: #000000;
-    --text-secondary: #616161;
-    --text-tertiary: #9E9E9E;
-    --text-light: #9E9E9E;
+    --text-primary: #000042;
+    --text-secondary: #4A5A70;
+    --text-tertiary: #6B7D96;
+    --text-light: #94A8C4;
     --text-inverse: #FFFFFF;
 
     /* Background Colors */
     --bg-primary: #FFFFFF;
-    --bg-secondary: #FAFAFA;
-    --bg-tertiary: #F5F5F5;
-    --bg-dark: #000000;
+    --bg-secondary: #F4F8FF;
+    --bg-tertiary: #E6EEFA;
+    --bg-dark: #000042;
 
     /* Border Colors */
-    --border-light: #EEEEEE;
-    --border-medium: #E0E0E0;
-    --border-dark: #BDBDBD;
-    --border-color: #E0E0E0;
+    --border-light: #E6EEFA;
+    --border-medium: #D8E4F5;
+    --border-dark: #BFCFE5;
+    --border-color: #D8E4F5;
 
-    /* Status Colors (Monochrome) */
-    --success: #000000;
-    --error: #424242;
-    --warning: #757575;
-    --info: #9E9E9E;
+    /* Status Colors */
+    --success: #329c92;
+    --error: #D32F2F;
+    --warning: #ffa726;
+    --info: #0288D1;
 
-    /* Shadows - Subtle and Professional */
-    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.10);
-    --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.12);
+    /* Shadows */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 66, 0.05);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 66, 0.08);
+    --shadow-md: 0 4px 8px rgba(0, 0, 66, 0.12);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 66, 0.15);
+    --shadow-xl: 0 12px 24px rgba(0, 0, 66, 0.2);
 
     /* Glass Shadows */
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
-    --glass-shadow-hover: 0 12px 40px 0 rgba(0, 0, 0, 0.12);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 66, 0.1);
+    --glass-shadow-hover: 0 12px 40px 0 rgba(0, 0, 66, 0.15);
 }
 
 /* Global Styles */
@@ -427,6 +435,7 @@ select,
         font-weight: bold;
     }
 }
+
 /* Messages Container */
 .messages-container {
     padding-bottom: 0;

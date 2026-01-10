@@ -4,76 +4,395 @@
 {% block title %}Virtual Try-On | Prime Optical{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/virtual-tryon.css' %}">
+<style>
+    /* Virtual Try-On Page Styles - INLINED for reliability */
+
+    /* --- NEW VTO HEADER LAYOUT --- */
+    .tryon-container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        background: var(--bg-secondary);
+        min-height: 100vh;
+    }
+
+    .tryon-header-section {
+        background: #fff;
+        border-bottom: 1px solid var(--border-light);
+        padding: 10px 20px;
+        position: sticky;
+        top: 70px;
+        z-index: 100;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        justify-content: center;
+    }
+
+    .camera-compact-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        max-width: 1000px;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .camera-container.compact {
+        width: 200px;
+        height: 150px;
+        border-radius: 12px;
+        background: #000;
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 2px solid var(--accent-teal);
+        box-shadow: var(--shadow-md);
+    }
+
+    .camera-container.compact video,
+    .camera-container.compact canvas,
+    .camera-container.compact img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scaleX(-1);
+        top: 0;
+        left: 0;
+    }
+
+    .face-guide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+    }
+
+    .face-oval {
+        width: 80px;
+        height: 110px;
+        border: 2px dashed rgba(255, 255, 255, 0.6);
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        box-shadow: 0 0 0 9999px rgba(0, 0, 66, 0.3);
+    }
+
+    .camera-actions {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .tryon-info .tryon-title {
+        font-size: 1.5rem;
+        color: var(--primary-black);
+        margin: 0;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+    .tryon-info .tryon-subtitle {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin: 5px 0 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    /* Compact Buttons */
+    .action-btn {
+        padding: 10px 20px;
+        border-radius: 30px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .action-btn.primary {
+        background-color: #329C92 !important;
+        /* Force Teal */
+        color: white !important;
+        border: 1px solid transparent;
+    }
+
+    .action-btn.secondary {
+        background: #f0f0f0;
+        color: var(--primary-black);
+        border: 1px solid #ccc;
+    }
+
+    .action-btn.small {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+
+    /* High-Visibility Shutter Button */
+    @keyframes pulse-teal {
+        0% {
+            box-shadow: 0 0 0 0 rgba(50, 156, 146, 0.4);
+        }
+
+        70% {
+            box-shadow: 0 0 0 15px rgba(50, 156, 146, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(50, 156, 146, 0);
+        }
+    }
+
+    .shutter-btn {
+        width: 70px;
+        /* Big & Bold */
+        height: 70px;
+        border-radius: 50%;
+        background: white;
+        border: 6px solid var(--accent-teal);
+        /* Thick noticeable border */
+        position: relative;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        /* Deep shadow */
+        transition: transform 0.2s ease;
+    }
+
+    .shutter-btn:not(:disabled) {
+        animation: pulse-teal 2s infinite;
+        /* Attention-grabbing pulse */
+    }
+
+    .shutter-btn:hover:not(:disabled) {
+        transform: scale(1.1);
+        /* Grow on hover */
+        background-color: #f8ffff;
+    }
+
+    .shutter-btn.small {
+        width: 48px;
+        height: 48px;
+    }
+
+    .shutter-btn.small::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 38px;
+        height: 38px;
+        background: var(--accent-teal);
+        border-radius: 50%;
+    }
+
+    .shutter-btn:active {
+        transform: scale(0.95);
+    }
+
+    /* --- FRAMES GRID --- */
+    .frames-grid-container {
+        padding: 40px 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        color: var(--primary-black);
+        margin-bottom: 30px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        border-bottom: 2px solid var(--border-light);
+        padding-bottom: 15px;
+    }
+
+    .frames-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 25px;
+    }
+
+    .tryon-card {
+        background: #fff;
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .tryon-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--accent-teal);
+    }
+
+    .card-image-wrapper {
+        width: 100%;
+        aspect-ratio: 4/3;
+        position: relative;
+        background: var(--bg-secondary);
+        overflow: hidden;
+    }
+
+    .card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 20px;
+        transition: opacity 0.3s;
+    }
+
+    .card-img.tryon-view {
+        object-fit: cover;
+        padding: 0;
+        transform: scaleX(1);
+    }
+
+    /* Card Loader */
+    .card-loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--accent-teal);
+        font-weight: 600;
+        font-size: 0.8rem;
+        display: none;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+
+    .tryon-card.loading .card-loader {
+        display: block;
+    }
+
+    .tryon-card.loading .card-img {
+        opacity: 0.3;
+    }
+
+    .card-details {
+        padding: 15px;
+        text-align: center;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0 0 5px;
+        color: var(--primary-black);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .card-subtitle {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="tryon-container">
-    <h1 class="tryon-title">Virtual Try-On</h1>
-    <p class="tryon-subtitle">See how frames look on you in real-time using AR technology</p>
-
-    <div class="tryon-layout">
-        <!-- Camera Section -->
-        <div class="camera-section">
-            <div class="instructions">
-                <h3>How to Use:</h3>
-                <ul>
-                    <li>Allow camera access when prompted</li>
-                    <li>Position your face in the center of the frame</li>
-                    <li>Select a frame from the sidebar to try it on</li>
-                    <li>Capture photos to save your favorite looks</li>
-                </ul>
-            </div>
-
-            <div class="camera-container">
+    <!-- Top Section: Control Center & Camera -->
+    <div class="tryon-header-section">
+        <div class="camera-compact-wrapper">
+            <div class="camera-container compact">
                 <video id="webcam" autoplay playsinline></video>
                 <canvas id="canvas"></canvas>
-                <div id="loading" class="loading-overlay">
-                    <div class="loading-spinner"></div>
-                    <div>Loading AR Models...</div>
+                <img id="captured-face" style="display: none;" alt="Captured Face">
+
+                <div class="face-guide">
+                    <div class="face-oval"></div>
                 </div>
             </div>
 
-            <div class="camera-controls">
-                <button id="startBtn" class="control-btn">Start Camera</button>
-                <button id="stopBtn" class="control-btn" disabled>Stop Camera</button>
-                <button id="captureBtn" class="control-btn" disabled>Capture Photo</button>
-                <button id="switchBtn" class="control-btn" disabled>Switch Camera</button>
+            <div class="camera-actions">
+                <div class="tryon-info">
+                    <h1 class="tryon-title">3D Try On</h1>
+                    <p class="tryon-subtitle">1. Capture your face &nbsp;•&nbsp; 2. Scroll to see frames on YOU</p>
+                </div>
+                <div class="action-buttons">
+                    <button id="startBtn" class="action-btn primary small">Start Camera</button>
+                    <div class="capture-container" style="text-align: center;">
+                        <button id="captureBtn" class="shutter-btn small" disabled></button>
+                        <p style="font-size: 0.7rem; color: var(--primary-black); margin-top: 5px; font-weight: 600;">
+                            Press to Capture</p>
+                    </div>
+                    <button id="retakeBtn" class="action-btn secondary small" style="display: none;">Retake</button>
+                </div>
+                <!-- Error Message Container -->
+                <p id="camera-error" style="color: red; font-size: 0.8rem; margin-top: 10px; display: none;"></p>
             </div>
         </div>
+    </div>
 
-        <!-- Product Selection Sidebar -->
-        <div class="product-sidebar">
-            <h2 class="sidebar-title">Select Frames</h2>
-            <div class="variant-list">
-                {% for variant in variants %}
-                {% if variant.image %}
-                <div class="variant-item" data-variant-id="{{ variant.id }}" data-image-url="{{ variant.image.url }}">
-                    <img src="{{ variant.image.url }}" alt="{{ variant.product.name }}" class="variant-image">
-                    <div class="variant-info">
-                        <div class="variant-name">{{ variant.product.name }}</div>
-                        <div class="variant-color">{{ variant.color_name }}</div>
-                    </div>
+    <!-- Main Content: Product Grid -->
+    <div class="frames-grid-container">
+        <h2 class="section-title">Try On These Styles</h2>
+        <div class="frames-grid">
+            {% for variant in variants %}
+            {% if variant.image %}
+            <div class="tryon-card" data-variant-id="{{ variant.id }}" data-product-name="{{ variant.product.name }}">
+                <div class="card-image-wrapper">
+                    <!-- Default Product Image -->
+                    <img src="{{ variant.image.url }}" class="card-img default-view" alt="{{ variant.product.name }}">
+                    <!-- Container for Try-On Result (Hidden initially) -->
+                    <img src="" class="card-img tryon-view" style="display: none;" alt="Try-On Result">
+                    <div class="card-loader">Loading...</div>
                 </div>
-                {% endif %}
-                {% empty %}
-                <p style="color: var(--text-secondary); text-align: center;">No frames available for try-on</p>
-                {% endfor %}
+                <div class="card-details">
+                    <h3 class="card-title">{{ variant.product.name }}</h3>
+                    <p class="card-subtitle">{{ variant.color_name }}</p>
+                </div>
             </div>
+            {% endif %}
+            {% empty %}
+            <p class="no-frames">No frames available</p>
+            {% endfor %}
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<!-- Face Detection Library -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
+<!-- Three.js (Global) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
-<!-- Virtual Try-On Application -->
-<script src="{% static 'js/virtual-tryon.js' %}"></script>
+<!-- MediaPipe Globals -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+
+<!-- Virtual Try-On Configuration -->
 <script>
-    // Initialize the application with session ID
-    initVirtualTryOn('{{ session_id }}');
+    window.tryonConfig = {
+        sessionId: '{{ session_id }}',
+        framesUrl: '{% url "virtual_tryon:frames_models" %}',
+        csrfToken: '{{ csrf_token }}'
+    };
 </script>
+
+<!-- Virtual Try-On Application (Standard Script) -->
+<script src="{% static 'js/virtual-tryon.js' %}?v={% now 'U' %}"></script>
 {% endblock %}

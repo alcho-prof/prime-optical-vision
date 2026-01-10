@@ -9,4 +9,5 @@ urlpatterns = [
     path('api/save-photo/', views.save_tryon_photo, name='save_photo'),
     path('api/cache-face/', views.cache_face_data, name='cache_face'),
     path('api/variant/<int:variant_id>/', views.get_variant_overlay, name='variant_overlay'),
+    path('api/models/', views.get_frames_models, name='frames_models'),
 ]

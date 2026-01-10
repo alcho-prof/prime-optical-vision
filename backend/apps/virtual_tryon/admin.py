@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TryOnSession, TryOnPhoto, FaceDetectionCache
+from .models import TryOnSession, TryOnPhoto, FaceDetectionCache, SpectacleFrame
 
 
 @admin.register(TryOnSession)
@@ -48,3 +48,13 @@ class FaceDetectionCacheAdmin(admin.ModelAdmin):
         return f'<pre>{json.dumps(obj.face_data, indent=2)}</pre>'
     face_data_display.short_description = 'Face Data'
     face_data_display.allow_tags = True
+
+
+@admin.register(SpectacleFrame)
+class SpectacleFrameAdmin(admin.ModelAdmin):
+    list_display = ['variant', 'scaling_factor', 'file_exists']
+    search_fields = ['variant__product__name']
+    
+    def file_exists(self, obj):
+        return bool(obj.model_file)
+    file_exists.boolean = True

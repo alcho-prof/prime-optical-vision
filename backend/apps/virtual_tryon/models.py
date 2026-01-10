@@ -50,3 +50,28 @@ class FaceDetectionCache(models.Model):
     
     def __str__(self):
         return f"Face data for session {self.session.session_id}"
+
+
+class SpectacleFrame(models.Model):
+    """3D Model and metadata for a spectacle frame"""
+    variant = models.OneToOneField(ProductVariant, on_delete=models.CASCADE, related_name='tryon_model')
+    model_file = models.FileField(upload_to='frames_3d/', help_text="Upload .glb or .gltf file")
+    
+    # Geometric parameters for alignment
+    scaling_factor = models.FloatField(default=1.0, help_text="Scale adjustment for the model")
+    
+    # Position offsets (in meters, approx) to align with face landmarks
+    offset_x = models.FloatField(default=0.0)
+    offset_y = models.FloatField(default=0.0)
+    offset_z = models.FloatField(default=0.0)
+    
+    # Rotation adjustment if needed
+    rotation_x = models.FloatField(default=0.0)
+    rotation_y = models.FloatField(default=0.0)
+    rotation_z = models.FloatField(default=0.0)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"3D Model for {self.variant}"
