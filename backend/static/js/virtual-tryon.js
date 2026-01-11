@@ -139,20 +139,32 @@ class VisualEngine {
         });
         this.renderer.setSize(width, height);
         this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setClearColor(0x000000, 0); // Transparent
     }
 
     initLights() {
         // High quality lighting for realistic frame reflection
-        const startLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        const startLight = new THREE.DirectionalLight(0xffffff, 1.5);
         startLight.position.set(10, 10, 20);
         this.scene.add(startLight);
 
-        const fillLight = new THREE.DirectionalLight(0xffeedd, 0.8);
+        const fillLight = new THREE.DirectionalLight(0xffeedd, 1.0);
         fillLight.position.set(-10, 0, 20);
         this.scene.add(fillLight);
 
-        const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+        const ambient = new THREE.AmbientLight(0xffffff, 0.8);
         this.scene.add(ambient);
+    }
+
+    setFrameMetadata(meta) {
+        this.currentMeta = meta || {};
+    }
+
+    resetSmoothers() {
+        this.poseSmoother.position = new LandmarkSmoother();
+        this.poseSmoother.quaternion = new LandmarkSmoother();
+        this.poseSmoother.scale = null;
+        this.scaleBuffer = null;
     }
 
     async loadFrame(url) {
@@ -164,34 +176,56 @@ class VisualEngine {
                 return reject("GLTFLoader missing");
             }
             const loader = new LoaderClass();
-            loader.load(url, (gltf) => {
-                const model = gltf.scene;
 
-                // Cleanup old
-                if (this.currentFrame) this.frameGroup.remove(this.currentFrame);
+            // Add error handler to loader.load
+            loader.load(
+                url,
+                (gltf) => {
+                    const model = gltf.scene;
 
-                // Normalize Model Center
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
+                    // Cleanup old
+                    if (this.currentFrame) {
+                        this.frameGroup.remove(this.currentFrame);
+                        // Traverse and dispose to prevent memory leaks
+                        this.currentFrame.traverse((child) => {
+                            if (child.isMesh) {
+                                child.geometry.dispose();
+                                if (child.material) {
+                                    if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+                                    else child.material.dispose();
+                                }
+                            }
+                        });
+                    }
 
-                // Shift so (0,0,0) is at the bridge (top center relatively)
-                // Bridge logic: X=0, Y=Top - 10-20%, Z=Front
-                const bridgeY = center.y + size.y * 0.35;
+                    // Normalize Model Center
+                    const box = new THREE.Box3().setFromObject(model);
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3());
 
-                const wrapper = new THREE.Object3D();
-                model.position.set(-center.x, -bridgeY, -center.z);
-                wrapper.add(model);
+                    // Shift so (0,0,0) is at the bridge (top center relatively)
+                    // Bridge logic: X=0, Y=Top - 10-20%, Z=Front
+                    const bridgeY = center.y + size.y * 0.35;
 
-                this.currentFrame = wrapper;
-                this.frameGroup.add(wrapper);
-                this.frameGroup.visible = true;
-                resolve(wrapper);
-            }, undefined, reject);
+                    const wrapper = new THREE.Object3D();
+                    model.position.set(-center.x, -bridgeY, -center.z);
+                    wrapper.add(model);
+
+                    this.currentFrame = wrapper;
+                    this.frameGroup.add(wrapper);
+                    this.frameGroup.visible = true;
+                    resolve(wrapper);
+                },
+                undefined,
+                (err) => {
+                    console.error("Error loading GLB:", url, err);
+                    reject(err);
+                }
+            );
         });
     }
 
-    update(poseData) {
+    update(poseData, isStatic = false) {
         if (!this.currentFrame) return;
 
         // 1. Z-Projection Logic
@@ -204,28 +238,51 @@ class VisualEngine {
         const targetPos = new THREE.Vector3(
             poseData.center.x * vPlaneW,
             poseData.center.y * vPlaneH,
-            0 // Locked to Z=0 for stability, depth handled by scale
+            0 // Locked to Z=0 for stability
         );
 
-        // 2. Scale Logic
-        // Calculate physical scale ratio.
-        // We want the eyeDistance in model space to match eyeDistance in world space.
-        // But we don't know the exact model dimensions without metadata.
-        // Robust Heuristic: The model width should be approx 2.2x the IPD.
-        const modelScale = (poseData.eyeDistance * vPlaneW * 2.2) * 6.5; // Tuned multiplier
+        // Apply Metadata Offsets (in meters, loosely mapped to world units)
+        // Heuristic: World units ~ cm for this setup
+        if (this.currentMeta?.metadata?.position) {
+            targetPos.x += (this.currentMeta.metadata.position.x || 0);
+            targetPos.y += (this.currentMeta.metadata.position.y || 0);
+            targetPos.z += (this.currentMeta.metadata.position.z || 0);
+        }
 
-        // 3. Smoothing
-        const smoothPos = this.poseSmoother.position.update(targetPos);
-        const smoothRot = this.poseSmoother.quaternion.update(poseData.quaternion);
-        // Scale smoothing is critical to prevent "breathing" effect
-        // We manually smooth the scalar
-        if (!this.scaleBuffer) this.scaleBuffer = modelScale;
-        this.scaleBuffer = this.scaleBuffer * 0.7 + modelScale * 0.3;
+        // 2. Scale Logic
+        // Robust Heuristic: The model width should be approx 2.2x the IPD.
+        let modelScale = (poseData.eyeDistance * vPlaneW * 2.2) * 6.5;
+
+        // Apply Metadata Scale
+        if (this.currentMeta?.metadata?.scale) {
+            modelScale *= this.currentMeta.metadata.scale;
+        }
+
+        // 3. Smoothing (Skip if static/gallery mode)
+        let smoothPos, smoothRot;
+
+        if (isStatic) {
+            smoothPos = targetPos;
+            smoothRot = poseData.quaternion;
+            this.scaleBuffer = modelScale;
+        } else {
+            smoothPos = this.poseSmoother.position.update(targetPos);
+            smoothRot = this.poseSmoother.quaternion.update(poseData.quaternion);
+            if (!this.scaleBuffer) this.scaleBuffer = modelScale;
+            this.scaleBuffer = this.scaleBuffer * 0.7 + modelScale * 0.3;
+        }
 
         // 4. Apply Transforms
         this.frameGroup.position.copy(smoothPos);
         this.frameGroup.quaternion.copy(smoothRot);
         this.frameGroup.scale.setScalar(this.scaleBuffer);
+
+        // Apply Metadata Rotation Adjustment
+        if (this.currentMeta?.metadata?.rotation) {
+            this.frameGroup.rotateX(THREE.Math.degToRad(this.currentMeta.metadata.rotation.x || 0));
+            this.frameGroup.rotateY(THREE.Math.degToRad(this.currentMeta.metadata.rotation.y || 0));
+            this.frameGroup.rotateZ(THREE.Math.degToRad(this.currentMeta.metadata.rotation.z || 0));
+        }
 
         // Render
         this.renderer.render(this.scene, this.camera);
@@ -274,6 +331,7 @@ class TryOnApp {
             const data = await resp.json();
             if (data.success) {
                 data.frames.forEach(f => this.framesMetadata[f.id] = f);
+                console.log("Metadata loaded for", data.frames.length, "frames");
             }
         } catch (e) { console.warn("Metadata load failed", e); }
 
@@ -384,7 +442,12 @@ class TryOnApp {
         const meta = this.framesMetadata[variantId];
         if (meta?.model_url) {
             card.classList.add('loading');
-            await this.engine.loadFrame(meta.model_url);
+            this.engine.setFrameMetadata(meta);
+            try {
+                await this.engine.loadFrame(meta.model_url);
+            } catch (e) {
+                console.error("Failed to load frame for preview:", e);
+            }
             card.classList.remove('loading');
         }
     }
@@ -431,35 +494,36 @@ class TryOnApp {
     }
 
     async runSmartGallery(sourceCanvas) {
-        // Re-use the existing visual engine but offscreen?
-        // Actually, we need to run face detection ONE LAST TIME on the static image
-        // to get the perfect static landmarks.
+        this.faceMesh.reset();
+        this.engine.resetSmoothers(); // Critical for instant static rendering
 
-        this.faceMesh.reset(); // clear history
-
-        // We need a way to get landmarks ONE time.
-        // We'll hook the next result.
+        // One-time listener hack
         const originalOnResults = this.faceMesh.onResults;
 
         return new Promise((resolve) => {
-            // One-time listener for the static image
             const processStaticImage = async (results) => {
                 if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
                     const landmarks = results.multiFaceLandmarks[0];
                     const pose = GeometrySolver.computeHeadPose(landmarks);
 
-                    // Now render every card
+                    // Render every card
                     const cards = document.querySelectorAll('.tryon-card');
                     let count = 0;
                     for (const card of cards) {
                         try {
                             await this.renderCard(card, pose, sourceCanvas);
                             count++;
-                            // Small delay to yield to UI/main thread to prevent freezing
-                            if (count % 2 === 0) await new Promise(r => setTimeout(r, 50));
+                            if (count % 2 === 0) await new Promise(r => setTimeout(r, 20));
                         } catch (err) {
                             console.error("Failed to render card", card, err);
+                            // Visual Feedback for Error
                             card.classList.remove('loading');
+                            const loader = card.querySelector('.card-loader');
+                            if (loader) {
+                                loader.textContent = "Error";
+                                loader.style.display = 'block';
+                                loader.style.color = 'red';
+                            }
                         }
                     }
                 } else {
@@ -467,7 +531,7 @@ class TryOnApp {
                     alert("No face detected. Please retake.");
                 }
 
-                // Restore original listener
+                // Restore
                 this.faceMesh.onResults((res) => this.onFaceResults(res));
                 resolve();
             };
@@ -480,15 +544,23 @@ class TryOnApp {
     async renderCard(card, pose, bgCanvas) {
         const variantId = card.dataset.variantId;
         const meta = this.framesMetadata[variantId];
-        if (!meta?.model_url) return;
+
+        // If no model or metadata, skip it
+        if (!meta?.model_url) {
+            console.warn("No model for card variant", variantId);
+            return;
+        }
 
         card.classList.add('loading');
 
-        // Load model into engine
+        // Pass metadata to engine
+        this.engine.setFrameMetadata(meta);
+
+        // Load model (can throw)
         await this.engine.loadFrame(meta.model_url);
 
-        // Force update engine to this static pose
-        this.engine.update(pose);
+        // Force update engine (STATIC mode = true)
+        this.engine.update(pose, true);
 
         // Composite
         const destW = 500;
@@ -499,16 +571,15 @@ class TryOnApp {
         comp.height = destH;
         const ctx = comp.getContext('2d');
 
-        // Draw Face (Mirrored to match webcam feel?)
-        // The sourceCanvas is raw video. 
-        // engine render is also matching that geometry.
-        // We flip both for the user.
+        // Draw Face 
         ctx.save();
         ctx.scale(-1, 1);
         ctx.translate(-destW, 0);
         ctx.drawImage(bgCanvas, 0, 0, destW, destH);
 
-        // Draw 3D
+        // Draw 3D (Frame)
+        // Ensure the engine is rendered
+        this.engine.renderer.render(this.engine.scene, this.engine.camera);
         ctx.drawImage(this.engine.renderer.domElement, 0, 0, destW, destH);
         ctx.restore();
 

@@ -1,0 +1,35 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: prime_optical_db
+      MYSQL_USER: prime_optical_user
+      MYSQL_PASSWORD: secure_password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+      - DB_NAME=prime_optical_db
+      - DB_USER=prime_optical_user
+      - DB_PASSWORD=secure_password
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-docker-dev-key
+
+volumes:
+  db_data:

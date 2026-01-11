@@ -12,3 +12,7 @@ sqlparse==0.5.5
 urllib3==2.6.2
 whitenoise==6.11.0
 django-allauth[socialaccount]>=65.0.0
+numpy>=1.26.0
+trimesh>=4.0.0
+scikit-image>=0.22.0
+shapely>=2.0.0

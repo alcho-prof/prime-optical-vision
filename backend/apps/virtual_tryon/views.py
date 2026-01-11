@@ -20,8 +20,11 @@ def virtual_tryon_view(request, slug=None):
         product = get_object_or_404(Product, slug=slug)
         variants = product.variants.all()
     else:
-        # Show all products with try-on capability
-        variants = ProductVariant.objects.filter(image__isnull=False)[:20]
+        # Show all products with try-on capability (must have a 3D model)
+        variants = ProductVariant.objects.filter(
+            image__isnull=False,
+            tryon_model__isnull=False
+        ).select_related('tryon_model')[:20]
     
     # Create or get session
     session_id = request.session.get('tryon_session_id')
